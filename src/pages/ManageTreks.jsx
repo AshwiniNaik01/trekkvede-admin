@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getTreks } from "../api/trekApi";
-import DataTable from "../components/common/DataTable";
+import DataTable from "../components/table/DataTable";
 import { FaMountain, FaPlus, FaCheckCircle, FaTimesCircle, FaMapMarkerAlt, FaCalendarAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
 

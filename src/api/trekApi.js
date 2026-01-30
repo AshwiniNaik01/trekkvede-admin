@@ -35,7 +35,7 @@ export const getCategories = async () => {
  */
 export const getTreks = async () => {
     try {
-        const response = await axiosInstance.get("/api/trek");
+        const response = await axiosInstance.get("/trek");
         return response.data;
     } catch (error) {
         console.error("API Error (getTreks):", error);
