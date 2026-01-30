@@ -22,7 +22,15 @@ const menuItems = [
       { name: "Manage Treks", path: "/treks/manage" },
     ],
   },
-  { name: "Bookings", path: "/bookings", icon: <FaClipboardList /> },
+  {
+    name: "Bookings",
+    path: "/bookings",
+    icon: <FaClipboardList />,
+    submenu: [
+      { name: "Create Bookings", path: "/bookings/create" },
+      { name: "Manage Bookings", path: "/bookings/manage" },
+    ],
+  },
   { name: "Gallery", path: "/gallery", icon: <FaImages /> },
   { name: "Videos", path: "/videos", icon: <FaVideo /> },
   { name: "Users", path: "/users", icon: <FaUsers /> },
@@ -127,7 +135,7 @@ export default function Sidebar() {
               <span className="text-lg">{item.icon}</span>
               {!collapsed && <span>{item.name}</span>}
             </NavLink>
-          )
+          ),
         )}
       </nav>
     </aside>
