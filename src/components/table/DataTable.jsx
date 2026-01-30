@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
     FaChevronLeft,
     FaChevronRight,
@@ -9,17 +9,37 @@ import {
 } from "react-icons/fa";
 
 /**
- * Reusable DataTable component with pagination and search.
+ * Reusable DataTable component with pagination, search, and row actions.
  * Theme: Amber / Emerald Combination
- * @param {Array} columns - Array of objects defining header labels and accessor keys/render functions.
- * @param {Array} data - Array of data objects to display.
+ * @param {Array} columns - Header labels and accessor keys/render functions.
+ * @param {Array} data - Raw data array.
  * @param {Boolean} loading - Loading state.
  * @param {Number} initialPageSize - Default results per page.
+ * @param {Array} rowActions - Optional array of { label, icon, onClick, variant }.
  */
-export default function DataTable({ columns, data = [], loading = false, initialPageSize = 10 }) {
+export default function DataTable({
+    columns,
+    data = [],
+    loading = false,
+    initialPageSize = 10,
+    rowActions = []
+}) {
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(initialPageSize);
+    const [activeDropdown, setActiveDropdown] = useState(null);
+    const dropdownRef = useRef(null);
+
+    // Close dropdown on click outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setActiveDropdown(null);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     // Filter logic
     const filteredData = data.filter((item) =>
@@ -40,7 +60,12 @@ export default function DataTable({ columns, data = [], loading = false, initial
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
             setCurrentPage(newPage);
+            setActiveDropdown(null);
         }
+    };
+
+    const toggleDropdown = (idx) => {
+        setActiveDropdown(activeDropdown === idx ? null : idx);
     };
 
     return (
@@ -51,7 +76,7 @@ export default function DataTable({ columns, data = [], loading = false, initial
                     <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-400 group-focus-within:text-amber-500 transition-colors" />
                     <input
                         type="text"
-                        placeholder="Search anything..."
+                        placeholder="Search catalog..."
                         className="w-full pl-11 pr-4 py-2.5 bg-white border border-emerald-100 rounded-2xl outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-200 transition-all text-sm font-medium"
                         value={searchTerm}
                         onChange={(e) => {
@@ -69,7 +94,7 @@ export default function DataTable({ columns, data = [], loading = false, initial
                         <FaSortAmountDown className="text-amber-500" /> Sort
                     </button>
                     <select
-                        className="px-4 py-2.5 bg-white border border-emerald-100 rounded-2xl text-sm font-bold text-emerald-800 outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all appearance-none cursor-pointer"
+                        className="px-4 py-2.5 bg-white border border-emerald-100 rounded-2xl text-sm font-bold text-emerald-800 outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all"
                         value={pageSize}
                         onChange={(e) => {
                             setPageSize(Number(e.target.value));
@@ -84,7 +109,7 @@ export default function DataTable({ columns, data = [], loading = false, initial
             </div>
 
             {/* Table Container */}
-            <div className="overflow-x-auto">
+            <div className="overflow-visible">
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="bg-emerald-50/20">
@@ -96,7 +121,7 @@ export default function DataTable({ columns, data = [], loading = false, initial
                                     {col.label}
                                 </th>
                             ))}
-                            <th className="px-6 py-4 border-b border-emerald-50"></th>
+                            {rowActions.length > 0 && <th className="px-6 py-4 border-b border-emerald-50 w-20"></th>}
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-emerald-50">
@@ -104,31 +129,65 @@ export default function DataTable({ columns, data = [], loading = false, initial
                             [...Array(pageSize)].map((_, i) => (
                                 <tr key={i} className="animate-pulse">
                                     {columns.map((_, j) => (
-                                        <td key={j} className="px-6 py-5 text-center">
-                                            <div className="h-4 bg-emerald-50 rounded-full w-24 mx-auto"></div>
+                                        <td key={j} className="px-6 py-5">
+                                            <div className="h-4 bg-emerald-50 rounded-full w-24 mx-auto md:mx-0"></div>
                                         </td>
                                     ))}
-                                    <td className="px-6 py-5"></td>
+                                    {rowActions.length > 0 && <td className="px-6 py-5"></td>}
                                 </tr>
                             ))
-                        ) : totalItems > 0 ? (
+                        ) : currentItems.length > 0 ? (
                             currentItems.map((row, rowIdx) => (
-                                <tr key={rowIdx} className="hover:bg-amber-50/30 transition-colors group">
+                                <tr key={rowIdx} className="hover:bg-amber-50/30 transition-colors group relative">
                                     {columns.map((col, colIdx) => (
                                         <td key={colIdx} className="px-6 py-5 text-sm font-medium text-emerald-900/80">
                                             {col.render ? col.render(row) : row[col.accessor]}
                                         </td>
                                     ))}
-                                    <td className="px-6 py-5 text-right">
-                                        <button className="p-2 text-emerald-200 hover:text-amber-600 hover:bg-white rounded-xl transition-all shadow-sm">
-                                            <FaEllipsisV />
-                                        </button>
-                                    </td>
+
+                                    {rowActions.length > 0 && (
+                                        <td className="px-6 py-5 text-right relative overflow-visible">
+                                            <div className="relative inline-block text-left" ref={activeDropdown === rowIdx ? dropdownRef : null}>
+                                                <button
+                                                    onClick={() => toggleDropdown(rowIdx)}
+                                                    className={`p-2 rounded-xl transition-all shadow-sm border ${activeDropdown === rowIdx
+                                                        ? "bg-amber-500 border-amber-400 text-white shadow-amber-500/20"
+                                                        : "text-emerald-200 border-transparent hover:text-amber-600 hover:bg-white hover:border-emerald-100"
+                                                        }`}
+                                                >
+                                                    <FaEllipsisV />
+                                                </button>
+
+                                                {/* Actions Dropdown */}
+                                                {activeDropdown === rowIdx && (
+                                                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-2xl shadow-emerald-900/10 border border-emerald-50 py-2 z-[100] animate-in fade-in zoom-in-95 duration-100">
+                                                        {rowActions.map((action, actionIdx) => (
+                                                            <button
+                                                                key={actionIdx}
+                                                                onClick={() => {
+                                                                    action.onClick(row);
+                                                                    setActiveDropdown(null);
+                                                                }}
+                                                                className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold transition-all text-left
+                                  ${action.variant === 'danger'
+                                                                        ? "text-red-500 hover:bg-red-50"
+                                                                        : "text-emerald-700 hover:bg-emerald-50"}
+                                `}
+                                                            >
+                                                                {action.icon && <span className="text-lg opacity-60">{action.icon}</span>}
+                                                                {action.label}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </td>
+                                    )}
                                 </tr>
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={columns.length + 1} className="px-6 py-20 text-center">
+                                <td colSpan={columns.length + (rowActions.length > 0 ? 1 : 0)} className="px-6 py-20 text-center">
                                     <div className="flex flex-col items-center gap-3 opacity-20 text-emerald-900">
                                         <FaSearch size={48} />
                                         <p className="text-lg font-black uppercase tracking-[0.2em]">No Matches Found</p>
@@ -158,11 +217,7 @@ export default function DataTable({ columns, data = [], loading = false, initial
                     <div className="flex items-center gap-1.5">
                         {[...Array(totalPages)].map((_, i) => {
                             const page = i + 1;
-                            if (
-                                page === 1 ||
-                                page === totalPages ||
-                                (page >= currentPage - 1 && page <= currentPage + 1)
-                            ) {
+                            if (page === 1 || page === totalPages || (page >= currentPage - 1 && page <= currentPage + 1)) {
                                 return (
                                     <button
                                         key={page}

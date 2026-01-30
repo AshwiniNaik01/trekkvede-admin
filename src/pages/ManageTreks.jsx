@@ -1,13 +1,17 @@
 import { useState, useEffect } from "react";
-import { getTreks } from "../api/trekApi";
+import { useNavigate, Link } from "react-router-dom";
+import { deleteTrek, getTreks } from "../api/trekApi";
 import DataTable from "../components/table/DataTable";
-import { FaMountain, FaPlus, FaCheckCircle, FaTimesCircle, FaMapMarkerAlt, FaCalendarAlt } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import Modal from "../components/modal/Modal";
+import { FaMountain, FaPlus, FaCheckCircle, FaTimesCircle, FaMapMarkerAlt, FaCalendarAlt, FaEdit, FaEye, FaTrashAlt, FaInfoCircle } from "react-icons/fa";
 
 export default function ManageTreks() {
+    const navigate = useNavigate();
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [selectedTrek, setSelectedTrek] = useState(null);
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
     useEffect(() => {
         fetchTreks();
@@ -17,7 +21,6 @@ export default function ManageTreks() {
         try {
             setLoading(true);
             const res = await getTreks();
-            // Adjust based on the actual API response structure (assuming res.data contains the array)
             setData(res.data || []);
             setLoading(false);
         } catch (err) {
@@ -26,6 +29,36 @@ export default function ManageTreks() {
             setLoading(false);
         }
     };
+
+    const handleEdit = (row) => {
+        navigate(`/treks/edit/${row._id}`);
+    };
+
+    const handleView = (row) => {
+        setSelectedTrek(row);
+        setIsViewModalOpen(true);
+    };
+
+    const handleDelete = async (row) => {
+        if (window.confirm(`Are you sure you want to permanently delete "${row.title}"?`)) {
+            try {
+                setLoading(true);
+                await deleteTrek(row._id);
+                alert("Trek deleted successfully");
+                fetchTreks(); // Refresh data
+            } catch (err) {
+                console.error("Delete error:", err);
+                alert(`Error deleting trek: ${err.message || err}`);
+                setLoading(false);
+            }
+        }
+    };
+
+    const rowActions = [
+        { label: "View Details", icon: <FaEye />, onClick: handleView },
+        { label: "Edit Trek", icon: <FaEdit />, onClick: handleEdit },
+        { label: "Delete", icon: <FaTrashAlt />, onClick: handleDelete, variant: 'danger' },
+    ];
 
     const columns = [
         {
@@ -143,8 +176,105 @@ export default function ManageTreks() {
                     </div>
                 )}
 
-                <DataTable columns={columns} data={data} loading={loading} />
+                <DataTable
+                    columns={columns}
+                    data={data}
+                    loading={loading}
+                    rowActions={rowActions}
+                />
             </div>
+
+            {/* View Details Modal */}
+            <Modal
+                isOpen={isViewModalOpen}
+                onClose={() => setIsViewModalOpen(false)}
+                title="Trek Expedition Details"
+                size="lg"
+            >
+                {selectedTrek && (
+                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        {/* Hero Info */}
+                        <div className="flex flex-col md:flex-row gap-8 items-start">
+                            <div className="w-full md:w-1/3 rounded-[2rem] overflow-hidden border-4 border-emerald-50 shadow-xl">
+                                {selectedTrek.image ? (
+                                    <img src={selectedTrek.image} alt={selectedTrek.title} className="w-full h-64 object-cover" />
+                                ) : (
+                                    <div className="w-full h-64 bg-emerald-50 flex items-center justify-center text-emerald-200">
+                                        <FaMountain size={64} />
+                                    </div>
+                                )}
+                            </div>
+                            <div className="flex-1 space-y-4">
+                                <div className="flex items-center gap-3">
+                                    <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-amber-200">
+                                        {selectedTrek.difficulty}
+                                    </span>
+                                    <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-200">
+                                        {selectedTrek.status}
+                                    </span>
+                                </div>
+                                <h2 className="text-4xl font-black text-emerald-950 leading-tight">
+                                    {selectedTrek.title}
+                                </h2>
+                                <div className="flex items-center gap-4 text-emerald-600 font-bold">
+                                    <div className="flex items-center gap-2 bg-emerald-50 px-4 py-2 rounded-2xl">
+                                        <FaMapMarkerAlt /> {selectedTrek.location}
+                                    </div>
+                                    <div className="flex items-center gap-2 bg-amber-50 px-4 py-2 rounded-2xl text-amber-700">
+                                        <FaCalendarAlt /> {selectedTrek.duration}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Pricing & Stats Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="p-6 bg-gradient-to-br from- emerald-50 to-white border border-emerald-100 rounded-3xl">
+                                <p className="text-xs font-black text-emerald-800/40 uppercase tracking-widest mb-1">Base Price</p>
+                                <p className="text-3xl font-black text-emerald-950">₹ {selectedTrek.price.toLocaleString()}</p>
+                                {selectedTrek.discount > 0 && <p className="text-sm font-bold text-amber-600 mt-1">{selectedTrek.discount}% Instant Discount</p>}
+                            </div>
+                            <div className="p-6 bg-gradient-to-br from-amber-50 to-white border border-amber-100 rounded-3xl">
+                                <p className="text-xs font-black text-amber-800/40 uppercase tracking-widest mb-1">Group Size</p>
+                                <p className="text-3xl font-black text-emerald-950">{selectedTrek.groupSize} PAX</p>
+                                <p className="text-sm font-bold text-emerald-600 mt-1">Recommended</p>
+                            </div>
+                            <div className="p-6 bg-white border border-gray-100 rounded-3xl shadow-sm">
+                                <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Altitude</p>
+                                <p className="text-3xl font-black text-emerald-950">{selectedTrek.altitude || "N/A"} FT</p>
+                            </div>
+                        </div>
+
+                        {/* Highlights section */}
+                        <div className="space-y-4">
+                            <h4 className="text-xl font-black text-emerald-900 flex items-center gap-2">
+                                <FaInfoCircle className="text-amber-500" /> Expedition Highlights
+                            </h4>
+                            <div className="p-6 bg-gray-50 rounded-3xl border border-gray-100">
+                                <p className="text-gray-600 leading-relaxed font-medium">
+                                    {selectedTrek.highlight || "No highlights provided for this trek."}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Actions in Modal */}
+                        <div className="flex justify-end pt-4 gap-4 border-t border-gray-100">
+                            <button
+                                onClick={() => setIsViewModalOpen(false)}
+                                className="px-6 py-3 font-bold text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                                Close Window
+                            </button>
+                            <button
+                                onClick={() => handleEdit(selectedTrek)}
+                                className="bg-emerald-600 text-white px-8 py-3 rounded-2xl font-black shadow-lg shadow-emerald-500/20 hover:bg-emerald-700 transition-all flex items-center gap-2"
+                            >
+                                <FaEdit /> Edit Full Profile
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </Modal>
         </div>
     );
 }

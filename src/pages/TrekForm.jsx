@@ -25,7 +25,8 @@ import CustomSelect from "../components/form/CustomSelect";
 import CustomDatePicker from "../components/form/CustomDatePicker";
 import RichTextEditor from "../components/form/RichTextEditor";
 // import RichTextEditor from "../components/form/RichTextEditor";
-import { createTrek, getCategories } from "../api/trekApi";
+import { useNavigate, useParams } from "react-router-dom";
+import { createTrek, getCategories, getTrekById, updateTrek } from "../api/trekApi";
 import { FaChevronRight } from "react-icons/fa";
 
 
@@ -83,6 +84,10 @@ export default function TrekForm() {
   const [errorMessage, setErrorMessage] = useState("");
   const [categories, setCategories] = useState([]);
 
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const isEditMode = !!id;
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -94,6 +99,30 @@ export default function TrekForm() {
     };
     fetchCategories();
   }, []);
+
+  useEffect(() => {
+    if (isEditMode) {
+      const fetchTrekDetails = async () => {
+        try {
+          setLoading(true);
+          const trekData = await getTrekById(id);
+          setFormData({
+            ...formData,
+            ...trekData,
+            // Ensure ID is kept and nested objects are handled
+            feeDetails: { ...formData.feeDetails, ...trekData.feeDetails },
+            links: { ...formData.links, ...trekData.links },
+          });
+          setLoading(false);
+        } catch (err) {
+          console.error("Failed to fetch trek details:", err);
+          setErrorMessage("Failed to load trek details for editing.");
+          setLoading(false);
+        }
+      };
+      fetchTrekDetails();
+    }
+  }, [id]);
 
   const tabs = [
     { id: "basic", label: "Basic Info", icon: FaInfoCircle },
@@ -153,15 +182,18 @@ export default function TrekForm() {
     setErrorMessage("");
 
     try {
-      console.log("Submitting Trek Data:", formData);
-      const response = await createTrek(formData);
-      console.log("Trek Created Successfully:", response);
-      alert("Trek saved successfully!");
-      // Optional: reset form or redirect
+      if (isEditMode) {
+        await updateTrek(id, formData);
+        alert("Trek updated successfully!");
+      } else {
+        await createTrek(formData);
+        alert("Trek created successfully!");
+      }
+      navigate("/treks/manage");
     } catch (err) {
       console.error("Submission error:", err);
       setErrorMessage(err.message || "An error occurred while saving the trek.");
-      alert(`Failed to save trek: ${err.message}`);
+      alert(`Failed to save trek: ${err.message || err}`);
     } finally {
       setLoading(false);
     }
@@ -180,11 +212,21 @@ export default function TrekForm() {
       <div className="max-w-6xl mx-auto">
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-black text-gray-900 tracking-tight">Create New Trek</h1>
-            <p className="text-gray-500 font-medium italic">Configure trek details as per the database schema</p>
+            <h1 className="text-3xl font-black text-gray-900 tracking-tight">
+              {isEditMode ? "Update Trek" : "Create New Trek"}
+            </h1>
+            <p className="text-gray-500 font-medium italic">
+              {isEditMode ? `Editing ID: ${id}` : "Configure trek details as per the database schema"}
+            </p>
           </div>
           <div className="flex gap-4">
-            <button className="px-6 py-2 text-gray-500 font-bold hover:text-gray-800 transition-colors">Discard</button>
+            <button
+              type="button"
+              onClick={() => navigate("/treks/manage")}
+              className="px-6 py-2 text-gray-500 font-bold hover:text-gray-800 transition-colors"
+            >
+              Cancel
+            </button>
             <button
               onClick={handleSubmit}
               disabled={loading}
@@ -194,11 +236,11 @@ export default function TrekForm() {
               {loading ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  Saving...
+                  {isEditMode ? "Updating..." : "Saving..."}
                 </>
               ) : (
                 <>
-                  Verify & Save Trek
+                  {isEditMode ? "Update Details" : "Verify & Save Trek"}
                 </>
               )}
             </button>

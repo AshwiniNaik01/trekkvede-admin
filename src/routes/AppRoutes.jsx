@@ -13,6 +13,7 @@ export default function AppRoutes() {
         <Route path="/treks" element={<TrekForm />} />
         <Route path="/treks/manage" element={<ManageTreks />} />
         <Route path="/treks/create" element={<TrekForm />} />
+        <Route path="/treks/edit/:id" element={<TrekForm />} />
       </Route>
     </Routes>
   );
