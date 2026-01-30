@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
 import {
   FaImage,
   FaInfoCircle,
@@ -23,13 +24,18 @@ import ImageUploader from "../components/form/ImageUploader";
 import CustomSelect from "../components/form/CustomSelect";
 import CustomDatePicker from "../components/form/CustomDatePicker";
 import RichTextEditor from "../components/form/RichTextEditor";
+// import RichTextEditor from "../components/form/RichTextEditor";
+import { createTrek, getCategories } from "../api/trekApi";
+import { FaChevronRight } from "react-icons/fa";
+
+
 
 export default function TrekForm() {
   const [formData, setFormData] = useState({
     title: "",
     location: "",
     difficulty: "Moderate",
-    category: "",
+    category: null,
     duration: "",
     groupSize: "",
     price: 0,
@@ -73,6 +79,39 @@ export default function TrekForm() {
   });
 
   const [activeTab, setActiveTab] = useState("basic");
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getCategories();
+        setCategories(data.map(cat => ({ value: cat._id, label: cat.name })));
+      } catch (err) {
+        console.error("Failed to fetch categories:", err);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  const tabs = [
+    { id: "basic", label: "Basic Info", icon: FaInfoCircle },
+    { id: "details", label: "Specifications", icon: FaChartBar },
+    { id: "logistics", label: "Content", icon: FaCalendarAlt },
+    { id: "fees", label: "Pricing", icon: FaRupeeSign },
+    { id: "media", label: "Media", icon: FaImage },
+  ];
+
+  const handleNextTab = () => {
+    const currentIndex = tabs.findIndex(t => t.id === activeTab);
+    if (currentIndex < tabs.length - 1) {
+      setActiveTab(tabs[currentIndex + 1].id);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+
 
   // Constants
   const difficulties = [
@@ -107,11 +146,27 @@ export default function TrekForm() {
     setFormData({ ...formData, [section]: updated });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Submitting Data:", formData);
-    alert("Check console for form data!");
+  const handleSubmit = async (e) => {
+    if (e) e.preventDefault();
+
+    setLoading(true);
+    setErrorMessage("");
+
+    try {
+      console.log("Submitting Trek Data:", formData);
+      const response = await createTrek(formData);
+      console.log("Trek Created Successfully:", response);
+      alert("Trek saved successfully!");
+      // Optional: reset form or redirect
+    } catch (err) {
+      console.error("Submission error:", err);
+      setErrorMessage(err.message || "An error occurred while saving the trek.");
+      alert(`Failed to save trek: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
   };
+
 
   const SectionTitle = ({ icon: Icon, title }) => (
     <div className="flex items-center gap-2 mb-6 border-b pb-2">
@@ -132,22 +187,29 @@ export default function TrekForm() {
             <button className="px-6 py-2 text-gray-500 font-bold hover:text-gray-800 transition-colors">Discard</button>
             <button
               onClick={handleSubmit}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-8 py-3 rounded-xl shadow-lg shadow-emerald-500/20 active:scale-95 transition-all flex items-center gap-2"
+              disabled={loading}
+              className={`${loading ? "bg-emerald-400 cursor-not-allowed" : "bg-emerald-600 hover:bg-emerald-700"
+                } text-white font-bold px-8 py-3 rounded-xl shadow-lg shadow-emerald-500/20 active:scale-95 transition-all flex items-center gap-2`}
             >
-              Verify & Save Trek
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  Saving...
+                </>
+              ) : (
+                <>
+                  Verify & Save Trek
+                </>
+              )}
             </button>
+
           </div>
         </header>
 
         {/* Tab Navigation */}
         <div className="flex flex-wrap gap-2 mb-8 bg-gray-200/50 p-1.5 rounded-2xl w-fit">
-          {[
-            { id: "basic", label: "Basic Info", icon: FaInfoCircle },
-            { id: "details", label: "Specifications", icon: FaChartBar },
-            { id: "logistics", label: "Content", icon: FaCalendarAlt },
-            { id: "fees", label: "Pricing", icon: FaRupeeSign },
-            { id: "media", label: "Media", icon: FaImage },
-          ].map((tab) => (
+          {tabs.map((tab) => (
+
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
@@ -162,7 +224,11 @@ export default function TrekForm() {
           ))}
         </div>
 
-        <form className="bg-white p-6 md:p-10 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 min-h-[600px]">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white p-6 md:p-10 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 min-h-[600px]"
+        >
+
 
           {/* --- BASIC INFO --- */}
           {activeTab === "basic" && (
@@ -213,6 +279,17 @@ export default function TrekForm() {
                   />
                 </div>
 
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 ml-1 mb-2">Trek Category</label>
+                  <CustomSelect
+                    options={categories}
+                    value={categories.find(c => c.value === formData.category)}
+                    onChange={(val) => setFormData({ ...formData, category: val.value })}
+                    placeholder="Select a category"
+                  />
+                </div>
+
+
                 <div className="md:col-span-2 space-y-3">
                   <label className="block text-sm font-bold text-gray-700 ml-1">Complexity Level</label>
                   <div className="flex flex-wrap gap-6 p-4 bg-gray-50 rounded-2xl border border-gray-100">
@@ -245,7 +322,18 @@ export default function TrekForm() {
                   />
                 </div>
               </div>
+
+              <div className="flex justify-end pt-6">
+                <button
+                  type="button"
+                  onClick={handleNextTab}
+                  className="flex items-center gap-2 bg-emerald-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20"
+                >
+                  Next Step <FaChevronRight size={14} />
+                </button>
+              </div>
             </div>
+
           )}
 
           {/* --- SPECIFICATIONS --- */}
@@ -320,7 +408,18 @@ export default function TrekForm() {
                   </div>
                 </div>
               </div>
+
+              <div className="flex justify-end pt-6">
+                <button
+                  type="button"
+                  onClick={handleNextTab}
+                  className="flex items-center gap-2 bg-emerald-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20"
+                >
+                  Next Step <FaChevronRight size={14} />
+                </button>
+              </div>
             </div>
+
           )}
 
           {/* --- CONTENT --- */}
@@ -339,12 +438,21 @@ export default function TrekForm() {
                 </div>
 
                 <div>
+                  <label className="block text-sm font-bold text-gray-700 ml-1 mb-2">Trek Highlights (Brief Summary)</label>
+                  <RichTextEditor
+                    value={formData.highlight}
+                    onChange={(content) => setFormData({ ...formData, highlight: content })}
+                  />
+                </div>
+
+                <div>
                   <label className="block text-sm font-bold text-gray-700 ml-1 mb-2">Full Story / Itinerary Overview</label>
                   <RichTextEditor
                     value={formData.description}
                     onChange={(content) => setFormData({ ...formData, description: content })}
                   />
                 </div>
+
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <InputField
@@ -359,9 +467,36 @@ export default function TrekForm() {
                     onChange={(e) => setFormData({ ...formData, proTrekkerBenefit: e.target.value })}
                     placeholder="Special perks for returning trekkers"
                   />
+
+                  <InputField
+                    label="Govt. Eligibility / Certificate"
+                    value={formData.govtEligibility}
+                    onChange={(e) => setFormData({ ...formData, govtEligibility: e.target.value })}
+                    placeholder="Eligibility criteria for govt. benefits"
+                  />
+
+                  <div className="md:col-span-2">
+                    <TagsInput
+                      label="Available Months"
+                      value={formData.months}
+                      onChange={(months) => setFormData({ ...formData, months })}
+                      placeholder="Type month and press enter..."
+                    />
+                  </div>
                 </div>
               </div>
+
+              <div className="flex justify-end pt-6">
+                <button
+                  type="button"
+                  onClick={handleNextTab}
+                  className="flex items-center gap-2 bg-emerald-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20"
+                >
+                  Next Step <FaChevronRight size={14} />
+                </button>
+              </div>
             </div>
+
           )}
 
           {/* --- PRICING --- */}
@@ -389,6 +524,23 @@ export default function TrekForm() {
 
                 <div className="lg:col-span-2 grid grid-cols-2 gap-6 bg-gray-50 p-8 rounded-[2rem] border border-gray-100">
                   <InputField
+                    label="Base Fee (Excl. GST)"
+                    type="number"
+                    value={formData.feeDetails.baseFee}
+                    onChange={(e) => setFormData({
+                      ...formData,
+                      feeDetails: { ...formData.feeDetails, baseFee: Number(e.target.value) }
+                    })}
+                  />
+                  <InputField
+                    label="Discount Amount"
+                    type="number"
+                    value={formData.discount}
+                    onChange={(e) => setFormData({ ...formData, discount: Number(e.target.value) })}
+                    placeholder="₹ 0"
+                  />
+                  <InputField
+
                     label="Group Insurance Cost"
                     type="number"
                     value={formData.feeDetails.insurance}
@@ -429,7 +581,18 @@ export default function TrekForm() {
                   <InputField label="Scholarship Details" value={formData.links.scholarships} onChange={(e) => setFormData({ ...formData, links: { ...formData.links, scholarships: e.target.value } })} placeholder="https://..." />
                 </div>
               </div>
+
+              <div className="flex justify-end pt-6">
+                <button
+                  type="button"
+                  onClick={handleNextTab}
+                  className="flex items-center gap-2 bg-emerald-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20"
+                >
+                  Next Step <FaChevronRight size={14} />
+                </button>
+              </div>
             </div>
+
           )}
 
           {/* --- MEDIA --- */}
@@ -501,7 +664,14 @@ export default function TrekForm() {
                               />
                             </div>
                           </div>
+                          <textarea
+                            value={addon.description}
+                            onChange={(e) => handleArrayChange(index, "description", e.target.value, "addons")}
+                            className="w-full bg-gray-50 border border-gray-100 rounded-xl text-sm px-4 py-2 outline-none focus:ring-2 focus:ring-emerald-500/20 min-h-[80px]"
+                            placeholder="Service description..."
+                          />
                         </div>
+
                       </div>
                     ))}
                     {formData.addons.length === 0 && (
