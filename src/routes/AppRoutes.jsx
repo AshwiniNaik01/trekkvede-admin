@@ -3,7 +3,8 @@ import AdminLayout from "../layout/AdminLayout";
 import Dashboard from "../pages/Dashboard";
 import ManageTreks from "../pages/ManageTreks";
 import TrekForm from "../pages/TrekForm";
-
+import ManageBookings from "../pages/ManageBookings";
+import TrekBookingForm from "../pages/TrekBookingForm";
 
 export default function AppRoutes() {
   return (
@@ -13,6 +14,9 @@ export default function AppRoutes() {
         <Route path="/treks" element={<TrekForm />} />
         <Route path="/treks/manage" element={<ManageTreks />} />
         <Route path="/treks/create" element={<TrekForm />} />
+        <Route path="/treks/edit/:id" element={<TrekForm />} />
+        <Route path="/bookings/create" element={<TrekBookingForm />} />
+        <Route path="/bookings/manage" element={<ManageBookings />} />
       </Route>
     </Routes>
   );
