@@ -7,7 +7,7 @@ import axiosInstance from "./axiosInstance";
  */
 export const addGallery = async (formData) => {
     try {
-        const response = await axiosInstance.post("/trek-gallery", formData, {
+        const response = await axiosInstance.post("/trekGallery", formData, {
             headers: { "Content-Type": "multipart/form-data" },
         });
         return response.data;
@@ -23,7 +23,7 @@ export const addGallery = async (formData) => {
  */
 export const getAllGallery = async () => {
     try {
-        const response = await axiosInstance.get("/trek-gallery");
+        const response = await axiosInstance.get("/trekGallery");
         return response.data;
     } catch (error) {
         console.error("API Error (getAllGallery):", error);
@@ -39,7 +39,7 @@ export const getAllGallery = async () => {
  */
 export const updateGallery = async (id, formData) => {
     try {
-        const response = await axiosInstance.put(`/trek-gallery/${id}`, formData, {
+        const response = await axiosInstance.put(`/trekGallery/${id}`, formData, {
             headers: { "Content-Type": "multipart/form-data" },
         });
         return response.data;
@@ -49,15 +49,16 @@ export const updateGallery = async (id, formData) => {
     }
 };
 
+
 /**
- * Deletes a specific item within a gallery record.
- * @param {String} galleryId - The ID of the gallery record.
- * @param {String} itemId - The ID of the specific image item in the gallery.
+ * Deletes a specific gallery item.
+ * Adjusted for backend route that expects only :itemId
+ * @param {String} itemId - The ID of the image item in the gallery.
  * @returns {Promise<Object>} - The response from the server.
  */
-export const deleteGalleryItem = async (galleryId, itemId) => {
+export const deleteGalleryItem = async (itemId) => {
     try {
-        const response = await axiosInstance.delete(`/trek-gallery/${galleryId}/${itemId}`);
+        const response = await axiosInstance.delete(`/trekGallery/${itemId}`);
         return response.data;
     } catch (error) {
         console.error("API Error (deleteGalleryItem):", error);
