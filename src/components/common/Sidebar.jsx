@@ -55,7 +55,6 @@ const menuItems = [
   { name: "Settings", path: "/settings", icon: <FaCog /> },
   { name: "Reviews", path: "/reviews/manage", icon: <FaStar /> },
   { name: "Payments", path: "/payments/manage", icon: <FaWallet /> },
-  { name: "Gallery", path: "/gallery", icon: <FaImages /> },
 ];
 
 export default function Sidebar() {
