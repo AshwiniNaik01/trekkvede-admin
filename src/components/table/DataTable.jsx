@@ -69,7 +69,7 @@ export default function DataTable({
     };
 
     return (
-        <div className="bg-white rounded-3xl shadow-2xl shadow-emerald-900/5 border border-emerald-50/50 overflow-hidden">
+        <div className="bg-white max-h-[600px] rounded-3xl shadow-2xl shadow-emerald-900/5 border border-emerald-50/50 overflow-hidden">
             {/* Header Actions */}
             <div className="p-6 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-emerald-50/30 to-amber-50/30">
                 <div className="relative group w-full md:w-96">
@@ -109,19 +109,21 @@ export default function DataTable({
             </div>
 
             {/* Table Container */}
-            <div className="overflow-visible">
+            <div className="max-h-[650px] overflow-y-auto custom-scrollbar relative">
                 <table className="w-full text-left border-collapse">
-                    <thead>
-                        <tr className="bg-emerald-50/20">
+                    <thead className="sticky top-0 z-20 shadow-sm">
+                        <tr className="bg-white">
                             {columns.map((col, idx) => (
                                 <th
                                     key={idx}
-                                    className="px-6 py-4 text-xs font-black text-emerald-800/60 uppercase tracking-widest border-b border-emerald-50"
+                                    className="px-6 py-4 text-xs font-black text-emerald-800/60 uppercase tracking-widest border-b border-emerald-50 bg-emerald-50/50 backdrop-blur-md"
                                 >
                                     {col.label}
                                 </th>
                             ))}
-                            {rowActions.length > 0 && <th className="px-6 py-4 border-b border-emerald-50 w-20"></th>}
+                            {rowActions.length > 0 && (
+                                <th className="px-6 py-4 border-b border-emerald-50 bg-emerald-50/50 backdrop-blur-md w-20"></th>
+                            )}
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-emerald-50">
