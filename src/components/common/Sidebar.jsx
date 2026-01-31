@@ -31,7 +31,15 @@ const menuItems = [
       { name: "Manage Bookings", path: "/bookings/manage" },
     ],
   },
-  { name: "Gallery", path: "/gallery", icon: <FaImages /> },
+  {
+    name: "Gallery",
+    path: "/gallery",
+    icon: <FaImages />,
+    submenu: [
+      { name: "Create Gallery Item", path: "/gallery/create" },
+      { name: "Manage Gallery Items", path: "/gallery/manage" },
+    ],
+  },
   { name: "Videos", path: "/videos", icon: <FaVideo /> },
   { name: "Users", path: "/users", icon: <FaUsers /> },
   { name: "Settings", path: "/settings", icon: <FaCog /> },
