@@ -42,8 +42,8 @@ export default function AppRoutes() {
         {/* Payments */}
         <Route path="/payments/manage" element={<ManagePayments />} />
 
-        {/* Media */}
-        <Route path="/gallery" element={<Gallery />} />
+        {/* Media
+        <Route path="/gallery" element={<Gallery />} /> */}
       </Route>
     </Routes>
   );

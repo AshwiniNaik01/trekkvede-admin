@@ -52,7 +52,6 @@ const menuItems = [
   },
   { name: "Reviews", path: "/reviews/manage", icon: <FaStar /> },
   { name: "Payments", path: "/payments/manage", icon: <FaWallet /> },
-  { name: "Gallery", path: "/gallery", icon: <FaImages /> },
 ];
 
 export default function Sidebar() {

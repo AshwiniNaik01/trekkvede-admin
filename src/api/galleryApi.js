@@ -6,15 +6,15 @@ import axiosInstance from "./axiosInstance";
  * @returns {Promise<Object>} - The response from the server.
  */
 export const addGallery = async (formData) => {
-    try {
-        const response = await axiosInstance.post("/trekGallery", formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-        });
-        return response.data;
-    } catch (error) {
-        console.error("API Error (addGallery):", error);
-        throw error.response?.data || error;
-    }
+  try {
+    const response = await axiosInstance.post("/trekGallery", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("API Error (addGallery):", error);
+    throw error.response?.data || error;
+  }
 };
 
 /**
@@ -22,13 +22,14 @@ export const addGallery = async (formData) => {
  * @returns {Promise<Object>} - Response containing gallery data.
  */
 export const getAllGallery = async () => {
-    try {
-        const response = await axiosInstance.get("/trekGallery");
-        return response.data;
-    } catch (error) {
-        console.error("API Error (getAllGallery):", error);
-        throw error.response?.data || error;
-    }
+  try {
+    const response = await axiosInstance.get("/trekGallery");
+    // console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error("API Error (getAllGallery):", error);
+    throw error.response?.data || error;
+  }
 };
 
 /**
@@ -38,15 +39,15 @@ export const getAllGallery = async () => {
  * @returns {Promise<Object>} - The response from the server.
  */
 export const updateGallery = async (id, formData) => {
-    try {
-        const response = await axiosInstance.put(`/trekGallery/${id}`, formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-        });
-        return response.data;
-    } catch (error) {
-        console.error("API Error (updateGallery):", error);
-        throw error.response?.data || error;
-    }
+  try {
+    const response = await axiosInstance.put(`/trekGallery/${id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("API Error (updateGallery):", error);
+    throw error.response?.data || error;
+  }
 };
 
 
@@ -56,12 +57,12 @@ export const updateGallery = async (id, formData) => {
  * @param {String} itemId - The ID of the image item in the gallery.
  * @returns {Promise<Object>} - The response from the server.
  */
-export const deleteGalleryItem = async (itemId) => {
-    try {
-        const response = await axiosInstance.delete(`/trekGallery/${itemId}`);
-        return response.data;
-    } catch (error) {
-        console.error("API Error (deleteGalleryItem):", error);
-        throw error.response?.data || error;
-    }
+export const deleteGalleryItem = async (galleryId) => {
+  try {
+    const response = await axiosInstance.delete(`/trekGallery/${galleryId}`);
+    return response.data;
+  } catch (error) {
+    console.error("API Error (deleteGalleryItem):", error);
+    throw error.response?.data || error;
+  }
 };
