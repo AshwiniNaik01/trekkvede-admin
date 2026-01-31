@@ -186,25 +186,6 @@ export default function ManageBookings() {
       </div>
 
       {/* ---------------- View Modal ---------------- */}
-      {/* <Modal
-        isOpen={isViewOpen}
-        onClose={() => setIsViewOpen(false)}
-        title="Booking Details"
-        size="lg"
-      >
-        {selectedBooking && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Info label="Booking ID" value={selectedBooking._id} />
-            <Info label="Customer Name" value={selectedBooking.name} />
-            <Info label="Email" value={selectedBooking.email} />
-            <Info label="Phone" value={selectedBooking.phone} />
-            <Info label="Trek" value={selectedBooking.trek} />
-            <Info label="Departure Date" value={selectedBooking.date} />
-            <Info label="People" value={`${selectedBooking.people} PAX`} />
-            <Info label="Status" value={selectedBooking.status} />
-          </div>
-        )}
-      </Modal> */}
 
       <Modal
         isOpen={isViewOpen}
