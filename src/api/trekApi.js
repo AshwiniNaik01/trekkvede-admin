@@ -21,8 +21,9 @@ export const createTrek = async (trekData) => {
  */
 export const getCategories = async () => {
     try {
-        const response = await axiosInstance.get("/api/trek-categories");
-        return response.data;
+        const response = await axiosInstance.get("/trek-categories");
+        // Check if response is wrapped in { data: ... }
+        return response.data.data || response.data;
     } catch (error) {
         console.error("API Error (getCategories):", error);
         throw error.response?.data || error;
@@ -51,7 +52,8 @@ export const getTreks = async () => {
 export const getTrekById = async (id) => {
     try {
         const response = await axiosInstance.get(`/trek/${id}`);
-        return response.data;
+        // Unwrap the data object from the response envelope
+        return response.data.data || response.data;
     } catch (error) {
         console.error("API Error (getTrekById):", error);
         throw error.response?.data || error;

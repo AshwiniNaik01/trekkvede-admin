@@ -10,6 +10,8 @@ import {
   FaCog,
   FaBars,
   FaChevronDown,
+  FaStar,
+  FaWallet,
 } from "react-icons/fa";
 
 const menuItems = [
@@ -20,6 +22,14 @@ const menuItems = [
     submenu: [
       { name: "Create Trek", path: "/treks/create" },
       { name: "Manage Treks", path: "/treks/manage" },
+    ],
+  },
+  {
+    name: "Trekk Categories",
+    icon: <FaClipboardList />,
+    submenu: [
+      { name: "Create Trekk Category", path: "/categories/create" },
+      { name: "Manage Trekk Categories", path: "/categories/manage" },
     ],
   },
   {
@@ -43,6 +53,9 @@ const menuItems = [
   { name: "Videos", path: "/videos", icon: <FaVideo /> },
   { name: "Users", path: "/users", icon: <FaUsers /> },
   { name: "Settings", path: "/settings", icon: <FaCog /> },
+  { name: "Reviews", path: "/reviews/manage", icon: <FaStar /> },
+  { name: "Payments", path: "/payments/manage", icon: <FaWallet /> },
+  { name: "Gallery", path: "/gallery", icon: <FaImages /> },
 ];
 
 export default function Sidebar() {

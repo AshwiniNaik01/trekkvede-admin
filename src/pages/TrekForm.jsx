@@ -26,8 +26,9 @@ import CustomDatePicker from "../components/form/CustomDatePicker";
 import RichTextEditor from "../components/form/RichTextEditor";
 // import RichTextEditor from "../components/form/RichTextEditor";
 import { useNavigate, useParams } from "react-router-dom";
-import { createTrek, getCategories, getTrekById, updateTrek } from "../api/trekApi";
+import { createTrek, getTrekById, updateTrek } from "../api/trekApi";
 import { FaChevronRight } from "react-icons/fa";
+import { getAllCategories } from "../api/trekCategoriesApi";
 
 
 
@@ -91,8 +92,9 @@ export default function TrekForm() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const data = await getCategories();
-        setCategories(data.map(cat => ({ value: cat._id, label: cat.name })));
+        const data = await getAllCategories();
+        // The API returns 'title' instead of 'name'
+        setCategories(data.map(cat => ({ value: cat._id, label: cat.title })));
       } catch (err) {
         console.error("Failed to fetch categories:", err);
       }
@@ -106,13 +108,31 @@ export default function TrekForm() {
         try {
           setLoading(true);
           const trekData = await getTrekById(id);
-          setFormData({
-            ...formData,
+
+          // Map category object to ID if needed
+          const categoryId = trekData.category?._id || trekData.category;
+
+          // Map months object array to string array for TagsInput
+          const monthsList = Array.isArray(trekData.months)
+            ? trekData.months.map(m => typeof m === 'object' ? m.month : m)
+            : [];
+
+          setFormData(prev => ({
+            ...prev,
             ...trekData,
-            // Ensure ID is kept and nested objects are handled
-            feeDetails: { ...formData.feeDetails, ...trekData.feeDetails },
-            links: { ...formData.links, ...trekData.links },
-          });
+            category: categoryId,
+            months: monthsList,
+            // Deep merge nested objects to avoid losing defaults or partial data
+            feeDetails: { ...prev.feeDetails, ...(trekData.feeDetails || {}) },
+            links: { ...prev.links, ...(trekData.links || {}) },
+            // Preserve default trekInfo structure if API returns empty
+            trekInfo: trekData.trekInfo && trekData.trekInfo.length > 0
+              ? trekData.trekInfo
+              : prev.trekInfo,
+            // Ensure dates are string format for inputs
+            startDate: trekData.startDate ? trekData.startDate.split('T')[0] : "",
+            endDate: trekData.endDate ? trekData.endDate.split('T')[0] : "",
+          }));
           setLoading(false);
         } catch (err) {
           console.error("Failed to fetch trek details:", err);
@@ -208,7 +228,7 @@ export default function TrekForm() {
   );
 
   return (
-    <div className="p-4 md:p-8 bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 min-h-screen">
       <div className="max-w-6xl mx-auto">
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
@@ -413,7 +433,7 @@ export default function TrekForm() {
                     <button
                       type="button"
                       onClick={() => addArrayItem("trekInfo", { title: "TREK DIFFICULTY", value: "" })}
-                      className="flex items-center gap-1.5 text-xs font-black text-emerald-600 bg-emerald-100 px-3 py-1.5 rounded-lg hover:bg-emerald-200 transition-colors uppercase"
+                      className="flex items-center gap-1.5 text-xs font-black text-emerald-600 bg-emerald-100 px-3 py-1.5 rounded-lg hover:bg-emerald-200 transition-colors"
                     >
                       <FaPlus /> Add Parameter
                     </button>
@@ -425,7 +445,7 @@ export default function TrekForm() {
                         <select
                           value={info.title}
                           onChange={(e) => handleArrayChange(index, "title", e.target.value, "trekInfo")}
-                          className="w-full text-[10px] font-black text-emerald-600 bg-transparent border-none outline-none mb-2 focus:ring-0 uppercase tracking-tighter"
+                          className="w-full text-sm font-black text-emerald-600 bg-transparent border-none outline-none mb-2 focus:ring-0"
                         >
                           {trekInfoTitles.map(t => <option key={t} value={t}>{t}</option>)}
                         </select>

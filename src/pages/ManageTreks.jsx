@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { deleteTrek, getTreks } from "../api/trekApi";
-import DataTable from "../components/table/DataTable";
 import Modal from "../components/modal/Modal";
 import { FaMountain, FaPlus, FaCheckCircle, FaTimesCircle, FaMapMarkerAlt, FaCalendarAlt, FaEdit, FaEye, FaTrashAlt, FaInfoCircle } from "react-icons/fa";
+import TrekCard from "../components/cards/TrekCard";
+import FilterControls from "../components/form/FilterControls";
 
 export default function ManageTreks() {
     const navigate = useNavigate();
@@ -12,6 +13,8 @@ export default function ManageTreks() {
     const [error, setError] = useState(null);
     const [selectedTrek, setSelectedTrek] = useState(null);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [difficultyFilter, setDifficultyFilter] = useState("all");
 
     useEffect(() => {
         fetchTreks();
@@ -30,21 +33,21 @@ export default function ManageTreks() {
         }
     };
 
-    const handleEdit = (row) => {
-        navigate(`/treks/edit/${row._id}`);
+    const handleEdit = (trek) => {
+        navigate(`/treks/edit/${trek._id}`);
     };
 
-    const handleView = (row) => {
-        setSelectedTrek(row);
+    const handleView = (trek) => {
+        setSelectedTrek(trek);
         setIsViewModalOpen(true);
     };
 
-    const handleDelete = async (row) => {
-        if (window.confirm(`Are you sure you want to permanently delete "${row.title}"?`)) {
+    const handleDelete = async (trek) => {
+        if (window.confirm(`Are you sure you want to permanently delete "${trek.title}"?`)) {
             try {
                 setLoading(true);
-                await deleteTrek(row._id);
-                alert("Trek deleted successfully");
+                await deleteTrek(trek._id);
+                // alert("Trek deleted successfully");
                 fetchTreks(); // Refresh data
             } catch (err) {
                 console.error("Delete error:", err);
@@ -54,222 +57,214 @@ export default function ManageTreks() {
         }
     };
 
-    const rowActions = [
-        { label: "View Details", icon: <FaEye />, onClick: handleView },
-        { label: "Edit Trek", icon: <FaEdit />, onClick: handleEdit },
-        { label: "Delete", icon: <FaTrashAlt />, onClick: handleDelete, variant: 'danger' },
-    ];
+    const filteredData = data.filter(trek => {
+        const matchesSearch = trek.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            trek.location.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesDifficulty = difficultyFilter === "all" || trek.difficulty === difficultyFilter;
+        return matchesSearch && matchesDifficulty;
+    });
 
-    const columns = [
-        {
-            label: "Trek Info",
-            render: (row) => (
-                <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl border-2 border-emerald-100 overflow-hidden flex-shrink-0 bg-gray-50 flex items-center justify-center">
-                        {row.image ? (
-                            <img src={row.image} alt={row.title} className="w-full h-full object-cover" />
-                        ) : (
-                            <FaMountain className="text-emerald-200 text-xl" />
-                        )}
-                    </div>
-                    <div>
-                        <div className="font-black text-gray-900 leading-tight">{row.title}</div>
-                        <div className="text-[10px] text-gray-400 font-bold uppercase mt-0.5 flex items-center gap-1">
-                            <FaMapMarkerAlt size={8} /> {row.location}
-                        </div>
-                    </div>
-                </div>
-            ),
-        },
-        {
-            label: "Difficulty",
-            render: (row) => {
-                const colors = {
-                    Easy: "bg-green-100 text-green-700",
-                    Moderate: "bg-blue-100 text-blue-700",
-                    Challenging: "bg-orange-100 text-orange-700",
-                    Difficult: "bg-red-100 text-red-700",
-                    Extreme: "bg-purple-100 text-purple-700",
-                };
-                return (
-                    <span className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider ${colors[row.difficulty] || "bg-gray-100 text-gray-600"}`}>
-                        {row.difficulty}
-                    </span>
-                );
-            },
-        },
-        {
-            label: "Duration / Size",
-            render: (row) => (
-                <div className="space-y-1">
-                    <div className="flex items-center gap-1.5 text-xs text-gray-600 font-bold">
-                        <FaCalendarAlt size={12} className="text-emerald-500" /> {row.duration}
-                    </div>
-                    <div className="text-[10px] text-gray-400 font-bold uppercase">
-                        Size: {row.groupSize}
-                    </div>
-                </div>
-            ),
-        },
-        {
-            label: "Price",
-            render: (row) => (
-                <div className="font-black text-gray-900">
-                    ₹ {row.price.toLocaleString()}
-                    {row.discount > 0 && (
-                        <div className="text-[10px] text-emerald-500 font-black">-{row.discount}% Off</div>
-                    )}
-                </div>
-            ),
-        },
-        {
-            label: "Status",
-            render: (row) => (
-                <div className="flex items-center gap-2">
-                    {row.isActive ? (
-                        <div className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100">
-                            <FaCheckCircle size={10} />
-                            <span className="text-[10px] font-black uppercase tracking-wider">Active</span>
-                        </div>
-                    ) : (
-                        <div className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-50 text-gray-400 border border-gray-100">
-                            <FaTimesCircle size={10} />
-                            <span className="text-[10px] font-black uppercase tracking-wider">Inactive</span>
-                        </div>
-                    )}
-                    {row.featured && (
-                        <div className="px-2 py-1 rounded bg-amber-100 text-amber-600 border border-amber-200 text-[8px] font-black uppercase">
-                            Featured
-                        </div>
-                    )}
-                </div>
-            ),
-        },
+    const difficultyOptions = [
+        { id: "Easy", name: "Easy" },
+        { id: "Moderate", name: "Moderate" },
+        { id: "Challenging", name: "Challenging" },
+        { id: "Difficult", name: "Difficult" },
+        { id: "Extreme", name: "Extreme" },
     ];
 
     return (
-        <div className="p-4 md:p-8 bg-gray-50 min-h-screen">
-            <div className="max-w-7xl mx-auto space-y-8">
-                <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="min-h-screen bg-gray-50 pb-20">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 py-8">
+                <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div>
-                        <h1 className="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-3">
-                            <div className="p-3 bg-emerald-100 text-emerald-600 rounded-2xl">
-                                <FaMountain />
+                        <h1 className="text-4xl font-black text-gray-900 tracking-tight flex items-center gap-4">
+                            <div className="p-4 bg-emerald-100 text-emerald-600 rounded-[2rem] shadow-sm shadow-emerald-100">
+                                <FaMountain size={28} />
                             </div>
                             Manage Treks
                         </h1>
-                        <p className="text-gray-500 font-medium mt-1">View and manage your expedition catalog</p>
+                        <p className="text-gray-500 font-bold mt-2 ml-1 text-sm uppercase tracking-widest flex items-center gap-2">
+                            <span className="w-8 h-[2px] bg-emerald-500 rounded-full"></span>
+                            {data.length} Total Expeditions
+                        </p>
                     </div>
-                    <Link
-                        to="/treks/create"
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-emerald-500/20 active:scale-95 transition-all flex items-center gap-2 w-fit"
-                    >
-                        <FaPlus /> Create New Trek
-                    </Link>
+
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                        <Link
+                            to="/treks/create"
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-black px-6 py-3.5 rounded-[1.25rem] shadow-xl shadow-emerald-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+                        >
+                            <FaPlus /> Create New Trek
+                        </Link>
+                    </div>
                 </header>
 
+                <FilterControls
+                    searchQuery={searchQuery}
+                    setSearchQuery={setSearchQuery}
+                    filterValue={difficultyFilter}
+                    setFilterValue={setDifficultyFilter}
+                    filterOptions={difficultyOptions}
+                    placeholder="Search treks..."
+                    allLabel="All Difficulties"
+                />
+
                 {error && (
-                    <div className="bg-red-50 border border-red-100 text-red-600 px-6 py-4 rounded-2xl font-bold flex items-center gap-3 animate-in fade-in slide-in-from-top-4">
+                    <div className="bg-red-50 border border-red-100 text-red-600 px-6 py-4 rounded-2xl font-bold flex items-center gap-3 animate-in fade-in slide-in-from-top-4 shadow-sm">
                         <FaTimesCircle />
                         {error}
-                        <button onClick={fetchTreks} className="ml-auto underline">Try Again</button>
+                        <button onClick={fetchTreks} className="ml-auto underline font-black">Try Again</button>
                     </div>
                 )}
 
-                <DataTable
-                    columns={columns}
-                    data={data}
-                    loading={loading}
-                    rowActions={rowActions}
-                />
+                {loading ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {[...Array(8)].map((_, i) => (
+                            <div key={i} className="bg-white rounded-3xl h-[400px] border border-gray-100 animate-pulse flex flex-col">
+                                <div className="h-48 bg-gray-100 rounded-t-3xl" />
+                                <div className="p-5 space-y-4 flex-1">
+                                    <div className="h-6 bg-gray-100 rounded-lg w-3/4" />
+                                    <div className="h-4 bg-gray-100 rounded-lg w-1/2" />
+                                    <div className="grid grid-cols-2 gap-4 pt-4">
+                                        <div className="h-10 bg-gray-50 rounded-xl" />
+                                        <div className="h-10 bg-gray-50 rounded-xl" />
+                                    </div>
+                                    <div className="mt-auto h-12 bg-gray-50 rounded-2xl" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : filteredData.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-in fade-in duration-500">
+                        {filteredData.map((trek) => (
+                            <TrekCard
+                                key={trek._id}
+                                trek={trek}
+                                onEdit={handleEdit}
+                                onView={handleView}
+                                onDelete={handleDelete}
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="bg-white rounded-[2.5rem] p-12 text-center border border-gray-100 shadow-sm">
+                        <div className="bg-emerald-50 text-emerald-500 w-20 h-20 rounded-[2rem] flex items-center justify-center mx-auto mb-6">
+                            <FaMountain size={32} />
+                        </div>
+                        <h3 className="text-xl font-black text-gray-900 mb-2">No Treks Found</h3>
+                        <p className="text-gray-500 font-bold max-w-sm mx-auto">
+                            {searchQuery ? `We couldn't find any treks matching "${searchQuery}".` : "You haven't added any treks to the catalog yet."}
+                        </p>
+                        {searchQuery && (
+                            <button
+                                onClick={() => setSearchQuery("")}
+                                className="mt-6 text-emerald-600 font-black hover:text-emerald-700 transition-colors underline"
+                            >
+                                Clear Search
+                            </button>
+                        )}
+                    </div>
+                )}
             </div>
+
 
             {/* View Details Modal */}
             <Modal
                 isOpen={isViewModalOpen}
                 onClose={() => setIsViewModalOpen(false)}
-                title="Trek Expedition Details"
+                title="Trek Details"
                 size="lg"
             >
                 {selectedTrek && (
-                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        {/* Hero Info */}
-                        <div className="flex flex-col md:flex-row gap-8 items-start">
-                            <div className="w-full md:w-1/3 rounded-[2rem] overflow-hidden border-4 border-emerald-50 shadow-xl">
+                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                        {/* Hero Section */}
+                        <div className="flex flex-col md:flex-row gap-6">
+                            <div className="w-full md:w-48 h-48 rounded-xl overflow-hidden border border-gray-100 flex-shrink-0">
                                 {selectedTrek.image ? (
-                                    <img src={selectedTrek.image} alt={selectedTrek.title} className="w-full h-64 object-cover" />
+                                    <img
+                                        src={selectedTrek.image || "https://tse1.mm.bing.net/th/id/OIP.dI22OgiQxCFyDNQ2PaNtvQHaE8?pid=Api&P=0&h=180"}
+                                        alt={selectedTrek.title || "Trek"}
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => {
+                                            e.currentTarget.src = "https://tse1.mm.bing.net/th/id/OIP.dI22OgiQxCFyDNQ2PaNtvQHaE8?pid=Api&P=0&h=180";
+                                        }}
+                                    />
+
                                 ) : (
-                                    <div className="w-full h-64 bg-emerald-50 flex items-center justify-center text-emerald-200">
-                                        <FaMountain size={64} />
+                                    <div className="w-full h-full bg-emerald-50 flex items-center justify-center text-emerald-200">
+                                        <FaMountain size={32} />
                                     </div>
                                 )}
                             </div>
-                            <div className="flex-1 space-y-4">
-                                <div className="flex items-center gap-3">
-                                    <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-amber-200">
+                            <div className="flex-1 space-y-3">
+                                <div className="flex gap-2">
+                                    <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-md text-[10px] font-bold uppercase">
                                         {selectedTrek.difficulty}
                                     </span>
-                                    <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-200">
+                                    <span className="px-2 py-0.5 bg-amber-100 text-amber-700 rounded-md text-[10px] font-bold uppercase">
                                         {selectedTrek.status}
                                     </span>
                                 </div>
-                                <h2 className="text-4xl font-black text-emerald-950 leading-tight">
+                                <h2 className="text-2xl font-bold text-gray-900 leading-tight">
                                     {selectedTrek.title}
                                 </h2>
-                                <div className="flex items-center gap-4 text-emerald-600 font-bold">
-                                    <div className="flex items-center gap-2 bg-emerald-50 px-4 py-2 rounded-2xl">
-                                        <FaMapMarkerAlt /> {selectedTrek.location}
+                                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500">
+                                    <div className="flex items-center gap-1.5">
+                                        <FaMapMarkerAlt className="text-emerald-500" /> {selectedTrek.location}
                                     </div>
-                                    <div className="flex items-center gap-2 bg-amber-50 px-4 py-2 rounded-2xl text-amber-700">
-                                        <FaCalendarAlt /> {selectedTrek.duration}
+                                    <div className="flex items-center gap-1.5">
+                                        <FaCalendarAlt className="text-amber-500" /> {selectedTrek.duration}
+                                    </div>
+                                    <div className="flex items-center gap-1.5 font-bold text-gray-800">
+                                        ₹ {selectedTrek.price.toLocaleString()}
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Pricing & Stats Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="p-6 bg-gradient-to-br from- emerald-50 to-white border border-emerald-100 rounded-3xl">
-                                <p className="text-xs font-black text-emerald-800/40 uppercase tracking-widest mb-1">Base Price</p>
-                                <p className="text-3xl font-black text-emerald-950">₹ {selectedTrek.price.toLocaleString()}</p>
-                                {selectedTrek.discount > 0 && <p className="text-sm font-bold text-amber-600 mt-1">{selectedTrek.discount}% Instant Discount</p>}
+                        {/* Quick Info Grid */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                            <div>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase">Group Size</p>
+                                <p className="text-sm font-bold text-gray-800">{selectedTrek.groupSize}</p>
                             </div>
-                            <div className="p-6 bg-gradient-to-br from-amber-50 to-white border border-amber-100 rounded-3xl">
-                                <p className="text-xs font-black text-amber-800/40 uppercase tracking-widest mb-1">Group Size</p>
-                                <p className="text-3xl font-black text-emerald-950">{selectedTrek.groupSize} PAX</p>
-                                <p className="text-sm font-bold text-emerald-600 mt-1">Recommended</p>
+                            <div>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase">Altitude</p>
+                                <p className="text-sm font-bold text-gray-800">{selectedTrek.altitude || "N/A"}</p>
                             </div>
-                            <div className="p-6 bg-white border border-gray-100 rounded-3xl shadow-sm">
-                                <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Altitude</p>
-                                <p className="text-3xl font-black text-emerald-950">{selectedTrek.altitude || "N/A"} FT</p>
+                            <div>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase">Season</p>
+                                <p className="text-sm font-bold text-gray-800">{selectedTrek.season || "N/A"}</p>
+                            </div>
+                            <div>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase">Base Fee</p>
+                                <p className="text-sm font-bold text-gray-800">₹ {selectedTrek.feeDetails?.baseFee || 0}</p>
                             </div>
                         </div>
 
-                        {/* Highlights section */}
-                        <div className="space-y-4">
-                            <h4 className="text-xl font-black text-emerald-900 flex items-center gap-2">
-                                <FaInfoCircle className="text-amber-500" /> Expedition Highlights
+                        {/* Highlights */}
+                        <div className="space-y-2">
+                            <h4 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                                <FaInfoCircle className="text-emerald-500" /> Description & Highlights
                             </h4>
-                            <div className="p-6 bg-gray-50 rounded-3xl border border-gray-100">
-                                <p className="text-gray-600 leading-relaxed font-medium">
-                                    {selectedTrek.highlight || "No highlights provided for this trek."}
-                                </p>
+                            <div className="text-sm text-gray-600 leading-relaxed font-medium bg-white p-4 rounded-xl border border-gray-100">
+                                {selectedTrek.highlight || selectedTrek.description || "No specific highlights provided."}
                             </div>
                         </div>
 
-                        {/* Actions in Modal */}
-                        <div className="flex justify-end pt-4 gap-4 border-t border-gray-100">
+                        {/* Actions */}
+                        <div className="flex justify-end pt-4 gap-3 border-t border-gray-100">
                             <button
                                 onClick={() => setIsViewModalOpen(false)}
-                                className="px-6 py-3 font-bold text-gray-400 hover:text-gray-600 transition-colors"
+                                className="px-4 py-2 text-sm font-bold text-gray-500 hover:text-gray-700 transition-colors"
                             >
-                                Close Window
+                                Dismiss
                             </button>
                             <button
                                 onClick={() => handleEdit(selectedTrek)}
-                                className="bg-emerald-600 text-white px-8 py-3 rounded-2xl font-black shadow-lg shadow-emerald-500/20 hover:bg-emerald-700 transition-all flex items-center gap-2"
+                                className="bg-emerald-600 text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-emerald-700 transition-all shadow-md flex items-center gap-2"
                             >
-                                <FaEdit /> Edit Full Profile
+                                <FaEdit size={14} /> Edit Catalog
                             </button>
                         </div>
                     </div>
