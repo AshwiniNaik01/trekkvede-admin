@@ -421,14 +421,6 @@ export default function TrekGalleryForm({ onSubmit }) {
     }));
   };
 
-  // For CustomSelect controlled values
-const handleSelectChange = (name, selectedOption) => {
-  setForm((prev) => ({
-    ...prev,
-    [name]: selectedOption ? selectedOption.value : "",
-  }));
-};
-
 
   return (
     <form
