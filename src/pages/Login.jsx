@@ -86,9 +86,14 @@
 //             {/* Overlay Content */}
 //             <div className="relative z-20 h-full flex flex-col justify-end p-12 text-white">
 //               <div className="mb-8">
-//                 <div className="inline-flex items-center gap-3 mb-6 bg-white/10 backdrop-blur-sm px-5 py-2 rounded-full border border-white/20">
+//                 <div className="inline-flex items-center gap-3 mb-6 bg-white/10 backdrop-blur-sm px-5 py-2 rounded-full border border-white/20 relative overflow-hidden">
+//                   {/* Sparkle effect overlay */}
+//                   <div className="absolute inset-0 animate-sparkle-sweep">
+//                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 -translate-x-full"></div>
+//                   </div>
+
 //                   <svg
-//                     className="w-6 h-6"
+//                     className="w-6 h-6 animate-sparkle-rotate text-yellow-400 relative z-10"
 //                     fill="none"
 //                     stroke="currentColor"
 //                     viewBox="0 0 24 24"
@@ -100,7 +105,7 @@
 //                       d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
 //                     />
 //                   </svg>
-//                   <span className="font-bold text-sm tracking-widest uppercase text-yellow-300">
+//                   <span className="font-bold text-lg text-yellow-400 tracking-widest uppercase animate-sparkle-text relative z-10">
 //                     TrekVede
 //                   </span>
 //                 </div>
@@ -138,9 +143,13 @@
 //             {/* Logo for Mobile */}
 //             <div className="md:hidden mb-8 text-center">
 //               <div className="inline-flex items-center gap-3 mb-4">
-//                 <div className="w-12 h-12 bg-emerald-600 rounded-2xl flex items-center justify-center text-white">
+//                 <div className="w-12 h-12 bg-emerald-600 rounded-2xl flex items-center justify-center text-white relative overflow-hidden">
+//                   {/* Sparkle effect */}
+//                   <div className="absolute inset-0 animate-sparkle-sweep">
+//                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 -translate-x-full"></div>
+//                   </div>
 //                   <svg
-//                     className="w-6 h-6"
+//                     className="w-6 h-6 animate-sparkle-rotate relative z-10"
 //                     fill="none"
 //                     stroke="currentColor"
 //                     viewBox="0 0 24 24"
@@ -153,7 +162,7 @@
 //                     />
 //                   </svg>
 //                 </div>
-//                 <span className="text-2xl font-black text-emerald-900">
+//                 <span className="text-2xl font-black text-emerald-900 animate-sparkle-text">
 //                   TrekVede
 //                 </span>
 //               </div>
@@ -241,9 +250,9 @@
 //                 {/* Role Selection */}
 //                 <div>
 //                   <label className="block text-sm font-bold text-gray-700 mb-2">
-//                     Login As
+//                     Role
 //                   </label>
-//                   <div className="grid grid-cols-2 gap-4">
+//                   <div className="grid grid-cols-2 gap-4 ">
 //                     <button
 //                       type="button"
 //                       onClick={() =>
@@ -364,12 +373,51 @@
 //           50% { transform: translateY(-30px); opacity: 0.8; }
 //         }
 
+//         @keyframes sparkle-sweep {
+//           0% { transform: translateX(-100%); }
+//           100% { transform: translateX(200%); }
+//         }
+
+//         @keyframes sparkle-rotate {
+//           0%, 100% {
+//             transform: rotate(0deg) scale(1);
+//             filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
+//           }
+//           50% {
+//             transform: rotate(180deg) scale(1.1);
+//             filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+//           }
+//         }
+
+//         @keyframes sparkle-text {
+//           0%, 100% {
+//             opacity: 1;
+//             text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+//           }
+//           50% {
+//             opacity: 1;
+//             text-shadow: 0 0 20px rgba(255, 255, 255, 0.6), 0 0 30px rgba(255, 255, 255, 0.4);
+//           }
+//         }
+
 //         .animate-slow-zoom {
 //           animation: slow-zoom 30s ease-in-out infinite;
 //         }
 
 //         .animate-float {
 //           animation: float 15s ease-in-out infinite;
+//         }
+
+//         .animate-sparkle-sweep {
+//           animation: sparkle-sweep 3s ease-in-out infinite;
+//         }
+
+//         .animate-sparkle-rotate {
+//           animation: sparkle-rotate 4s ease-in-out infinite;
+//         }
+
+//         .animate-sparkle-text {
+//           animation: sparkle-text 3s ease-in-out infinite;
 //         }
 //       `}</style>
 //     </div>
@@ -625,25 +673,25 @@ export default function LoginPage() {
                   </div>
                 </div>
 
-                {/* Role Selection */}
+                {/* Role Selection - SMALLER VERSION */}
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Login As
+                    Role
                   </label>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-3">
                     <button
                       type="button"
                       onClick={() =>
                         setFormData((prev) => ({ ...prev, role: "user" }))
                       }
-                      className={`py-4 px-6 rounded-2xl border-2 font-bold transition-all duration-300 ${
+                      className={`py-2.5 px-4 rounded-xl border-2 font-semibold transition-all duration-300 text-sm ${
                         formData.role === "user"
                           ? "bg-emerald-600 text-white border-emerald-600 shadow-lg shadow-emerald-600/30"
                           : "bg-white text-gray-700 border-gray-200 hover:border-emerald-300"
                       }`}
                     >
                       <svg
-                        className="w-6 h-6 mx-auto mb-2"
+                        className="w-4 h-4 mx-auto mb-1"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -662,14 +710,14 @@ export default function LoginPage() {
                       onClick={() =>
                         setFormData((prev) => ({ ...prev, role: "admin" }))
                       }
-                      className={`py-4 px-6 rounded-2xl border-2 font-bold transition-all duration-300 ${
+                      className={`py-2.5 px-4 rounded-xl border-2 font-semibold transition-all duration-300 text-sm ${
                         formData.role === "admin"
                           ? "bg-emerald-600 text-white border-emerald-600 shadow-lg shadow-emerald-600/30"
                           : "bg-white text-gray-700 border-gray-200 hover:border-emerald-300"
                       }`}
                     >
                       <svg
-                        className="w-6 h-6 mx-auto mb-2"
+                        className="w-4 h-4 mx-auto mb-1"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
