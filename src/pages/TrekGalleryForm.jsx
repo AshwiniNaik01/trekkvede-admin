@@ -70,6 +70,15 @@ export default function TrekGalleryForm({ onSubmit }) {
     onSubmit?.(form);
   };
 
+  // For CustomSelect controlled values
+const handleSelectChange = (name, selectedOption) => {
+  setForm((prev) => ({
+    ...prev,
+    [name]: selectedOption ? selectedOption.value : "",
+  }));
+};
+
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -133,52 +142,73 @@ export default function TrekGalleryForm({ onSubmit }) {
         />
 
         {/* GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-bold text-gray-700 ml-1 mb-2">
-              Month
-            </label>
-            <CustomSelect label="Month" name="month" options={months} />
-          </div>
-          <div>
-            <label className="block text-sm font-bold text-gray-700 ml-1 mb-2">
-              Year
-            </label>
-            <CustomSelect label="Year" name="year" options={years} />
-          </div>
-          <div>
-            <label className="block text-sm font-bold text-gray-700 ml-1 mb-2">
-              Experience Level
-            </label>
-            <CustomSelect
-              label="Experience Level"
-              name="experience"
-              options={experiences}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-bold text-gray-700 ml-1 mb-2">
-              Season
-            </label>
-            <CustomSelect
-              label="Season"
-              name="season"
-              options={seasons}
-              onChange={handleChange}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-bold text-gray-700 ml-1 mb-2">
-              Region
-            </label>
-            <CustomSelect
-              label="Region"
-              name="region"
-              options={regions}
-              onChange={handleChange}
-            />
-          </div>
-        </div>
+       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  {/* MONTH */}
+  <div>
+    <label className="block text-sm font-bold text-gray-700 ml-1 mb-2">
+      Month
+    </label>
+    <CustomSelect
+      options={months}
+      value={months.find((m) => m.value === form.month) || null}
+      onChange={(option) => handleSelectChange("month", option)}
+      placeholder="Select month"
+    />
+  </div>
+
+  {/* YEAR */}
+  <div>
+    <label className="block text-sm font-bold text-gray-700 ml-1 mb-2">
+      Year
+    </label>
+    <CustomSelect
+      options={years}
+      value={years.find((y) => y.value === form.year) || null}
+      onChange={(option) => handleSelectChange("year", option)}
+      placeholder="Select year"
+    />
+  </div>
+
+  {/* EXPERIENCE */}
+  <div>
+    <label className="block text-sm font-bold text-gray-700 ml-1 mb-2">
+      Experience Level
+    </label>
+    <CustomSelect
+      options={experiences}
+      value={experiences.find((e) => e.value === form.experience) || null}
+      onChange={(option) => handleSelectChange("experience", option)}
+      placeholder="Select experience"
+    />
+  </div>
+
+  {/* SEASON */}
+  <div>
+    <label className="block text-sm font-bold text-gray-700 ml-1 mb-2">
+      Season
+    </label>
+    <CustomSelect
+      options={seasons}
+      value={seasons.find((s) => s.value === form.season) || null}
+      onChange={(option) => handleSelectChange("season", option)}
+      placeholder="Select season"
+    />
+  </div>
+
+  {/* REGION */}
+  <div>
+    <label className="block text-sm font-bold text-gray-700 ml-1 mb-2">
+      Region
+    </label>
+    <CustomSelect
+      options={regions}
+      value={regions.find((r) => r.value === form.region) || null}
+      onChange={(option) => handleSelectChange("region", option)}
+      placeholder="Select region"
+    />
+  </div>
+</div>
+
 
         {/* ACTIVE */}
         <div className="flex items-center gap-3">
