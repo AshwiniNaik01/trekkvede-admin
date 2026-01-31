@@ -13,10 +13,13 @@ import Gallery from "../pages/Gallery";
 
 import ManageReviews from "../pages/ManageReviews";
 import ManagePayments from "../pages/ManagePayments";
+import LoginPage from "../pages/Login";
 
 export default function AppRoutes() {
   return (
     <Routes>
+      {/* Login */}
+      <Route path="/login" element={<LoginPage />} />
       <Route element={<AdminLayout />}>
         <Route path="/" element={<Dashboard />} />
         {/* Treks */}
@@ -41,9 +44,6 @@ export default function AppRoutes() {
 
         {/* Payments */}
         <Route path="/payments/manage" element={<ManagePayments />} />
-
-        {/* Media
-        <Route path="/gallery" element={<Gallery />} /> */}
       </Route>
     </Routes>
   );

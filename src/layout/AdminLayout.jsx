@@ -1,4 +1,3 @@
-
 import { Outlet } from "react-router-dom";
 import Sidebar from "../components/common/Sidebar";
 import Header from "../components/common/Header";
@@ -15,6 +14,5 @@ export default function AdminLayout() {
         </main>
       </div>
     </div>
-
   );
 }
