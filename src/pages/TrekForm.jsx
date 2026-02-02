@@ -12,7 +12,7 @@ import {
   FaMapMarkerAlt,
   FaUsers,
   FaClock,
-  FaHiking
+  FaHiking,
 } from "react-icons/fa";
 
 // UI Components
@@ -29,8 +29,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { createTrek, getTrekById, updateTrek } from "../api/trekApi";
 import { FaChevronRight } from "react-icons/fa";
 import { getAllCategories } from "../api/trekCategoriesApi";
-
-
 
 export default function TrekForm() {
   const [formData, setFormData] = useState({
@@ -94,7 +92,9 @@ export default function TrekForm() {
       try {
         const data = await getAllCategories();
         // The API returns 'title' instead of 'name'
-        setCategories(data.map(cat => ({ value: cat._id, label: cat.title })));
+        setCategories(
+          data.map((cat) => ({ value: cat._id, label: cat.title })),
+        );
       } catch (err) {
         console.error("Failed to fetch categories:", err);
       }
@@ -114,10 +114,10 @@ export default function TrekForm() {
 
           // Map months object array to string array for TagsInput
           const monthsList = Array.isArray(trekData.months)
-            ? trekData.months.map(m => typeof m === 'object' ? m.month : m)
+            ? trekData.months.map((m) => (typeof m === "object" ? m.month : m))
             : [];
 
-          setFormData(prev => ({
+          setFormData((prev) => ({
             ...prev,
             ...trekData,
             category: categoryId,
@@ -126,12 +126,15 @@ export default function TrekForm() {
             feeDetails: { ...prev.feeDetails, ...(trekData.feeDetails || {}) },
             links: { ...prev.links, ...(trekData.links || {}) },
             // Preserve default trekInfo structure if API returns empty
-            trekInfo: trekData.trekInfo && trekData.trekInfo.length > 0
-              ? trekData.trekInfo
-              : prev.trekInfo,
+            trekInfo:
+              trekData.trekInfo && trekData.trekInfo.length > 0
+                ? trekData.trekInfo
+                : prev.trekInfo,
             // Ensure dates are string format for inputs
-            startDate: trekData.startDate ? trekData.startDate.split('T')[0] : "",
-            endDate: trekData.endDate ? trekData.endDate.split('T')[0] : "",
+            startDate: trekData.startDate
+              ? trekData.startDate.split("T")[0]
+              : "",
+            endDate: trekData.endDate ? trekData.endDate.split("T")[0] : "",
           }));
           setLoading(false);
         } catch (err) {
@@ -153,18 +156,20 @@ export default function TrekForm() {
   ];
 
   const handleNextTab = () => {
-    const currentIndex = tabs.findIndex(t => t.id === activeTab);
+    const currentIndex = tabs.findIndex((t) => t.id === activeTab);
     if (currentIndex < tabs.length - 1) {
       setActiveTab(tabs[currentIndex + 1].id);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
-
-
   // Constants
   const difficulties = [
-    "Easy", "Moderate", "Challenging", "Difficult", "Extreme"
+    "Easy",
+    "Moderate",
+    "Challenging",
+    "Difficult",
+    "Extreme",
   ];
 
   const statuses = [
@@ -174,9 +179,18 @@ export default function TrekForm() {
   ];
 
   const trekInfoTitles = [
-    "TREK DIFFICULTY", "TREK DURATION", "HIGHEST ALTITUDE", "SUITABLE FOR",
-    "BASECAMP", "ACCOMMODATION", "FITNESS CRITERIA", "PICKUP", "DROPOFF",
-    "GEAR RENTAL", "CLOAKROOM", "OFFLOADING"
+    "TREK DIFFICULTY",
+    "TREK DURATION",
+    "HIGHEST ALTITUDE",
+    "SUITABLE FOR",
+    "BASECAMP",
+    "ACCOMMODATION",
+    "FITNESS CRITERIA",
+    "PICKUP",
+    "DROPOFF",
+    "GEAR RENTAL",
+    "CLOAKROOM",
+    "OFFLOADING",
   ];
 
   const handleArrayChange = (index, field, value, section) => {
@@ -212,18 +226,21 @@ export default function TrekForm() {
       navigate("/treks/manage");
     } catch (err) {
       console.error("Submission error:", err);
-      setErrorMessage(err.message || "An error occurred while saving the trek.");
+      setErrorMessage(
+        err.message || "An error occurred while saving the trek.",
+      );
       alert(`Failed to save trek: ${err.message || err}`);
     } finally {
       setLoading(false);
     }
   };
 
-
   const SectionTitle = ({ icon: Icon, title }) => (
     <div className="flex items-center gap-2 mb-6 border-b pb-2">
       <Icon className="text-emerald-600 text-xl" />
-      <h2 className="text-xl font-bold text-gray-800 tracking-tight">{title}</h2>
+      <h2 className="text-xl font-bold text-gray-800 tracking-tight">
+        {title}
+      </h2>
     </div>
   );
 
@@ -236,7 +253,9 @@ export default function TrekForm() {
               {isEditMode ? "Update Trek" : "Create New Trek"}
             </h1>
             <p className="text-gray-500 font-medium italic">
-              {isEditMode ? `Editing ID: ${id}` : "Configure trek details as per the database schema"}
+              {isEditMode
+                ? `Editing ID: ${id}`
+                : "Configure trek details as per the database schema"}
             </p>
           </div>
           <div className="flex gap-4">
@@ -250,8 +269,11 @@ export default function TrekForm() {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className={`${loading ? "bg-emerald-400 cursor-not-allowed" : "bg-emerald-600 hover:bg-emerald-700"
-                } text-white font-bold px-8 py-3 rounded-xl shadow-lg shadow-emerald-500/20 active:scale-95 transition-all flex items-center gap-2`}
+              className={`${
+                loading
+                  ? "bg-emerald-400 cursor-not-allowed"
+                  : "bg-emerald-600 hover:bg-emerald-700"
+              } text-white font-bold px-8 py-3 rounded-xl shadow-lg shadow-emerald-500/20 active:scale-95 transition-all flex items-center gap-2`}
             >
               {loading ? (
                 <>
@@ -259,26 +281,24 @@ export default function TrekForm() {
                   {isEditMode ? "Updating..." : "Saving..."}
                 </>
               ) : (
-                <>
-                  {isEditMode ? "Update Details" : "Verify & Save Trek"}
-                </>
+                <>{isEditMode ? "Update Details" : "Verify & Save Trek"}</>
               )}
             </button>
-
           </div>
         </header>
 
         {/* Tab Navigation */}
         <div className="flex flex-wrap gap-2 mb-8 bg-gray-200/50 p-1.5 rounded-2xl w-fit">
           {tabs.map((tab) => (
-
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all
-                ${activeTab === tab.id
-                  ? "bg-white text-emerald-600 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"}`}
+                ${
+                  activeTab === tab.id
+                    ? "bg-white text-emerald-600 shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
             >
               <tab.icon className="text-lg" />
               {tab.label}
@@ -290,8 +310,6 @@ export default function TrekForm() {
           onSubmit={handleSubmit}
           className="bg-white p-6 md:p-10 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 min-h-[600px]"
         >
-
-
           {/* --- BASIC INFO --- */}
           {activeTab === "basic" && (
             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -303,7 +321,9 @@ export default function TrekForm() {
                     label="Trek Name"
                     icon={FaHiking}
                     value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, title: e.target.value })
+                    }
                     placeholder="Enter official trek title"
                   />
                 </div>
@@ -312,7 +332,9 @@ export default function TrekForm() {
                   label="Trek Location"
                   icon={FaMapMarkerAlt}
                   value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, location: e.target.value })
+                  }
                   placeholder="Region, State (e.g. Ladakh, India)"
                 />
 
@@ -320,7 +342,9 @@ export default function TrekForm() {
                   label="Trek Duration"
                   icon={FaClock}
                   value={formData.duration}
-                  onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, duration: e.target.value })
+                  }
                   placeholder="E.g. 10 Days / 9 Nights"
                 />
 
@@ -328,34 +352,47 @@ export default function TrekForm() {
                   label="Target Group Size"
                   icon={FaUsers}
                   value={formData.groupSize}
-                  onChange={(e) => setFormData({ ...formData, groupSize: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, groupSize: e.target.value })
+                  }
                   placeholder="E.g. 12-15 Base Campers"
                 />
 
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 ml-1 mb-2">Registration Status</label>
+                  <label className="block text-sm font-bold text-gray-700 ml-1 mb-2">
+                    Registration Status
+                  </label>
                   <CustomSelect
                     options={statuses}
-                    value={statuses.find(s => s.value === formData.status)}
-                    onChange={(val) => setFormData({ ...formData, status: val.value })}
+                    value={statuses.find((s) => s.value === formData.status)}
+                    onChange={(val) =>
+                      setFormData({ ...formData, status: val.value })
+                    }
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 ml-1 mb-2">Trek Category</label>
+                  <label className="block text-sm font-bold text-gray-700 ml-1 mb-2">
+                    Trek Category
+                  </label>
                   <CustomSelect
                     options={categories}
-                    value={categories.find(c => c.value === formData.category)}
-                    onChange={(val) => setFormData({ ...formData, category: val.value })}
+                    value={categories.find(
+                      (c) => c.value === formData.category,
+                    )}
+                    onChange={(val) =>
+                      setFormData({ ...formData, category: val.value })
+                    }
                     placeholder="Select a category"
                   />
                 </div>
 
-
                 <div className="md:col-span-2 space-y-3">
-                  <label className="block text-sm font-bold text-gray-700 ml-1">Complexity Level</label>
+                  <label className="block text-sm font-bold text-gray-700 ml-1">
+                    Complexity Level
+                  </label>
                   <div className="flex flex-wrap gap-6 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                    {difficulties.map(level => (
+                    {difficulties.map((level) => (
                       <RadioButton
                         key={level}
                         id={`diff-${level}`}
@@ -363,7 +400,9 @@ export default function TrekForm() {
                         label={level}
                         value={level}
                         checked={formData.difficulty === level}
-                        onChange={(val) => setFormData({ ...formData, difficulty: val })}
+                        onChange={(val) =>
+                          setFormData({ ...formData, difficulty: val })
+                        }
                       />
                     ))}
                   </div>
@@ -374,13 +413,17 @@ export default function TrekForm() {
                     id="feat"
                     label="Mark as Featured (Landing Page)"
                     checked={formData.featured}
-                    onChange={(val) => setFormData({ ...formData, featured: val })}
+                    onChange={(val) =>
+                      setFormData({ ...formData, featured: val })
+                    }
                   />
                   <Checkbox
                     id="act"
                     label="Publicly Visible"
                     checked={formData.isActive}
-                    onChange={(val) => setFormData({ ...formData, isActive: val })}
+                    onChange={(val) =>
+                      setFormData({ ...formData, isActive: val })
+                    }
                   />
                 </div>
               </div>
@@ -395,7 +438,6 @@ export default function TrekForm() {
                 </button>
               </div>
             </div>
-
           )}
 
           {/* --- SPECIFICATIONS --- */}
@@ -407,14 +449,18 @@ export default function TrekForm() {
                 <InputField
                   label="Peak Altitude"
                   value={formData.altitude}
-                  onChange={(e) => setFormData({ ...formData, altitude: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, altitude: e.target.value })
+                  }
                   placeholder="E.g. 5,364m / 17,598ft"
                 />
 
                 <InputField
                   label="Recommended Season"
                   value={formData.season}
-                  onChange={(e) => setFormData({ ...formData, season: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, season: e.target.value })
+                  }
                   placeholder="E.g. June to September"
                 />
 
@@ -429,10 +475,17 @@ export default function TrekForm() {
 
                 <div className="md:col-span-2 p-6 bg-gray-50 rounded-3xl border border-gray-100">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest">Trek Parameter Mapping</h3>
+                    <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest">
+                      Trek Parameter Mapping
+                    </h3>
                     <button
                       type="button"
-                      onClick={() => addArrayItem("trekInfo", { title: "TREK DIFFICULTY", value: "" })}
+                      onClick={() =>
+                        addArrayItem("trekInfo", {
+                          title: "TREK DIFFICULTY",
+                          value: "",
+                        })
+                      }
                       className="flex items-center gap-1.5 text-xs font-black text-emerald-600 bg-emerald-100 px-3 py-1.5 rounded-lg hover:bg-emerald-200 transition-colors"
                     >
                       <FaPlus /> Add Parameter
@@ -441,19 +494,40 @@ export default function TrekForm() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {formData.trekInfo.map((info, index) => (
-                      <div key={index} className="group relative bg-white p-4 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                      <div
+                        key={index}
+                        className="group relative bg-white p-4 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+                      >
                         <select
                           value={info.title}
-                          onChange={(e) => handleArrayChange(index, "title", e.target.value, "trekInfo")}
+                          onChange={(e) =>
+                            handleArrayChange(
+                              index,
+                              "title",
+                              e.target.value,
+                              "trekInfo",
+                            )
+                          }
                           className="w-full text-sm font-black text-emerald-600 bg-transparent border-none outline-none mb-2 focus:ring-0"
                         >
-                          {trekInfoTitles.map(t => <option key={t} value={t}>{t}</option>)}
+                          {trekInfoTitles.map((t) => (
+                            <option key={t} value={t}>
+                              {t}
+                            </option>
+                          ))}
                         </select>
                         <div className="flex gap-2 items-center">
                           <input
                             type="text"
                             value={info.value}
-                            onChange={(e) => handleArrayChange(index, "value", e.target.value, "trekInfo")}
+                            onChange={(e) =>
+                              handleArrayChange(
+                                index,
+                                "value",
+                                e.target.value,
+                                "trekInfo",
+                              )
+                            }
                             className="flex-1 bg-gray-50 border-none rounded-xl text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500/20"
                             placeholder="Data value..."
                           />
@@ -481,59 +555,88 @@ export default function TrekForm() {
                 </button>
               </div>
             </div>
-
           )}
 
           {/* --- CONTENT --- */}
           {activeTab === "logistics" && (
             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <SectionTitle icon={FaCalendarAlt} title="Descriptions & Planning" />
+              <SectionTitle
+                icon={FaCalendarAlt}
+                title="Descriptions & Planning"
+              />
 
               <div className="space-y-8">
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 ml-1 mb-2">Trek Date Range</label>
+                  <label className="block text-sm font-bold text-gray-700 ml-1 mb-2">
+                    Trek Date Range
+                  </label>
                   <CustomDatePicker
                     startDate={formData.startDate}
                     endDate={formData.endDate}
-                    onChange={(dates) => setFormData({ ...formData, startDate: dates[0], endDate: dates[1] })}
+                    onChange={(dates) =>
+                      setFormData({
+                        ...formData,
+                        startDate: dates[0],
+                        endDate: dates[1],
+                      })
+                    }
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 ml-1 mb-2">Trek Highlights (Brief Summary)</label>
+                  <label className="block text-sm font-bold text-gray-700 ml-1 mb-2">
+                    Trek Highlights (Brief Summary)
+                  </label>
                   <RichTextEditor
                     value={formData.highlight}
-                    onChange={(content) => setFormData({ ...formData, highlight: content })}
+                    onChange={(content) =>
+                      setFormData({ ...formData, highlight: content })
+                    }
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 ml-1 mb-2">Full Story / Itinerary Overview</label>
+                  <label className="block text-sm font-bold text-gray-700 ml-1 mb-2">
+                    Full Story / Itinerary Overview
+                  </label>
                   <RichTextEditor
                     value={formData.description}
-                    onChange={(content) => setFormData({ ...formData, description: content })}
+                    onChange={(content) =>
+                      setFormData({ ...formData, description: content })
+                    }
                   />
                 </div>
-
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <InputField
                     label="Target Audience (Best For)"
                     value={formData.bestFor}
-                    onChange={(e) => setFormData({ ...formData, bestFor: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, bestFor: e.target.value })
+                    }
                     placeholder="E.g. Weekend Warriors, Pro Solos"
                   />
                   <InputField
                     label="Pro-Trekker Incentives"
                     value={formData.proTrekkerBenefit}
-                    onChange={(e) => setFormData({ ...formData, proTrekkerBenefit: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        proTrekkerBenefit: e.target.value,
+                      })
+                    }
                     placeholder="Special perks for returning trekkers"
                   />
 
                   <InputField
                     label="Govt. Eligibility / Certificate"
                     value={formData.govtEligibility}
-                    onChange={(e) => setFormData({ ...formData, govtEligibility: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        govtEligibility: e.target.value,
+                      })
+                    }
                     placeholder="Eligibility criteria for govt. benefits"
                   />
 
@@ -541,7 +644,9 @@ export default function TrekForm() {
                     <TagsInput
                       label="Available Months"
                       value={formData.months}
-                      onChange={(months) => setFormData({ ...formData, months })}
+                      onChange={(months) =>
+                        setFormData({ ...formData, months })
+                      }
                       placeholder="Type month and press enter..."
                     />
                   </div>
@@ -558,26 +663,35 @@ export default function TrekForm() {
                 </button>
               </div>
             </div>
-
           )}
 
           {/* --- PRICING --- */}
           {activeTab === "fees" && (
             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <SectionTitle icon={FaRupeeSign} title="Commercial Configuration" />
+              <SectionTitle
+                icon={FaRupeeSign}
+                title="Commercial Configuration"
+              />
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-1 bg-gradient-to-br from-emerald-600 to-emerald-800 p-8 rounded-[2rem] shadow-xl shadow-emerald-900/20 flex flex-col justify-center text-white relative overflow-hidden group">
                   <div className="absolute top-0 right-0 p-8 opacity-10 scale-150 transform group-hover:rotate-12 transition-transform">
                     <FaRupeeSign size={100} />
                   </div>
-                  <label className="block mb-2 text-[10px] uppercase font-black text-emerald-100 tracking-widest opacity-80">Base Platform Fee</label>
+                  <label className="block mb-2 text-[10px] uppercase font-black text-emerald-100 tracking-widest opacity-80">
+                    Base Platform Fee
+                  </label>
                   <div className="flex items-center gap-3">
                     <span className="text-4xl font-black opacity-60">₹</span>
                     <input
                       type="number"
                       value={formData.price}
-                      onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          price: Number(e.target.value),
+                        })
+                      }
                       className="bg-transparent text-5xl font-black border-none outline-none w-full focus:ring-0 placeholder:text-emerald-400/50"
                       placeholder="0.00"
                     />
@@ -589,46 +703,70 @@ export default function TrekForm() {
                     label="Base Fee (Excl. GST)"
                     type="number"
                     value={formData.feeDetails.baseFee}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      feeDetails: { ...formData.feeDetails, baseFee: Number(e.target.value) }
-                    })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        feeDetails: {
+                          ...formData.feeDetails,
+                          baseFee: Number(e.target.value),
+                        },
+                      })
+                    }
                   />
                   <InputField
                     label="Discount Amount"
                     type="number"
                     value={formData.discount}
-                    onChange={(e) => setFormData({ ...formData, discount: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        discount: Number(e.target.value),
+                      })
+                    }
                     placeholder="₹ 0"
                   />
                   <InputField
-
                     label="Group Insurance Cost"
                     type="number"
                     value={formData.feeDetails.insurance}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      feeDetails: { ...formData.feeDetails, insurance: Number(e.target.value) }
-                    })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        feeDetails: {
+                          ...formData.feeDetails,
+                          insurance: Number(e.target.value),
+                        },
+                      })
+                    }
                   />
                   <InputField
                     label="Expedition Transport"
                     type="number"
                     value={formData.feeDetails.transport}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      feeDetails: { ...formData.feeDetails, transport: Number(e.target.value) }
-                    })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        feeDetails: {
+                          ...formData.feeDetails,
+                          transport: Number(e.target.value),
+                        },
+                      })
+                    }
                   />
                   <div className="col-span-2">
                     <InputField
                       label="GST %"
                       type="number"
                       value={formData.feeDetails.gstPercent}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        feeDetails: { ...formData.feeDetails, gstPercent: Number(e.target.value) }
-                      })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          feeDetails: {
+                            ...formData.feeDetails,
+                            gstPercent: Number(e.target.value),
+                          },
+                        })
+                      }
                     />
                   </div>
                 </div>
@@ -637,10 +775,59 @@ export default function TrekForm() {
               <div className="mt-12 space-y-6">
                 <SectionTitle icon={FaFileAlt} title="Resource Endpoints" />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <InputField label="Inclusions PDF" value={formData.links.inclusions} onChange={(e) => setFormData({ ...formData, links: { ...formData.links, inclusions: e.target.value } })} placeholder="https://..." />
-                  <InputField label="Terms & Conditions" value={formData.links.terms} onChange={(e) => setFormData({ ...formData, links: { ...formData.links, terms: e.target.value } })} placeholder="https://..." />
-                  <InputField label="Cancellation Policy" value={formData.links.cancellation} onChange={(e) => setFormData({ ...formData, links: { ...formData.links, cancellation: e.target.value } })} placeholder="https://..." />
-                  <InputField label="Scholarship Details" value={formData.links.scholarships} onChange={(e) => setFormData({ ...formData, links: { ...formData.links, scholarships: e.target.value } })} placeholder="https://..." />
+                  <InputField
+                    label="Inclusions PDF"
+                    value={formData.links.inclusions}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        links: {
+                          ...formData.links,
+                          inclusions: e.target.value,
+                        },
+                      })
+                    }
+                    placeholder="https://..."
+                  />
+                  <InputField
+                    label="Terms & Conditions"
+                    value={formData.links.terms}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        links: { ...formData.links, terms: e.target.value },
+                      })
+                    }
+                    placeholder="https://..."
+                  />
+                  <InputField
+                    label="Cancellation Policy"
+                    value={formData.links.cancellation}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        links: {
+                          ...formData.links,
+                          cancellation: e.target.value,
+                        },
+                      })
+                    }
+                    placeholder="https://..."
+                  />
+                  <InputField
+                    label="Scholarship Details"
+                    value={formData.links.scholarships}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        links: {
+                          ...formData.links,
+                          scholarships: e.target.value,
+                        },
+                      })
+                    }
+                    placeholder="https://..."
+                  />
                 </div>
               </div>
 
@@ -654,7 +841,6 @@ export default function TrekForm() {
                 </button>
               </div>
             </div>
-
           )}
 
           {/* --- MEDIA --- */}
@@ -676,7 +862,9 @@ export default function TrekForm() {
                       isMultiple
                       maxFiles={10}
                       value={formData.gallery}
-                      onChange={(imgs) => setFormData({ ...formData, gallery: imgs })}
+                      onChange={(imgs) =>
+                        setFormData({ ...formData, gallery: imgs })
+                      }
                     />
                   </div>
                 </div>
@@ -684,12 +872,22 @@ export default function TrekForm() {
                 <div className="bg-gray-50 p-8 rounded-[2rem] border border-gray-100">
                   <div className="flex items-center justify-between mb-6">
                     <div>
-                      <h3 className="text-lg font-bold text-gray-800">Add-on Services</h3>
-                      <p className="text-sm text-gray-500">Optional gear or porter services</p>
+                      <h3 className="text-lg font-bold text-gray-800">
+                        Add-on Services
+                      </h3>
+                      <p className="text-sm text-gray-500">
+                        Optional gear or porter services
+                      </p>
                     </div>
                     <button
                       type="button"
-                      onClick={() => addArrayItem("addons", { name: "", price: 0, description: "" })}
+                      onClick={() =>
+                        addArrayItem("addons", {
+                          name: "",
+                          price: 0,
+                          description: "",
+                        })
+                      }
                       className="p-2 bg-emerald-600 text-white rounded-xl shadow-lg shadow-emerald-500/20 hover:bg-emerald-700 transition-colors"
                     >
                       <FaPlus size={18} />
@@ -698,7 +896,10 @@ export default function TrekForm() {
 
                   <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                     {formData.addons.map((addon, index) => (
-                      <div key={index} className="group p-5 bg-white rounded-2xl border border-gray-200 relative animate-in zoom-in duration-300">
+                      <div
+                        key={index}
+                        className="group p-5 bg-white rounded-2xl border border-gray-200 relative animate-in zoom-in duration-300"
+                      >
                         <button
                           type="button"
                           onClick={() => removeArrayItem("addons", index)}
@@ -710,17 +911,33 @@ export default function TrekForm() {
                           <input
                             type="text"
                             value={addon.name}
-                            onChange={(e) => handleArrayChange(index, "name", e.target.value, "addons")}
+                            onChange={(e) =>
+                              handleArrayChange(
+                                index,
+                                "name",
+                                e.target.value,
+                                "addons",
+                              )
+                            }
                             className="w-full bg-transparent font-bold text-gray-800 outline-none border-b border-gray-100 focus:border-emerald-500 transition-colors"
                             placeholder="Service Name (e.g. Sleeping Bag Rental)"
                           />
                           <div className="flex gap-4 items-center">
                             <div className="flex-1 flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-xl border border-gray-100">
-                              <span className="text-emerald-600 font-black">₹</span>
+                              <span className="text-emerald-600 font-black">
+                                ₹
+                              </span>
                               <input
                                 type="number"
                                 value={addon.price}
-                                onChange={(e) => handleArrayChange(index, "price", Number(e.target.value), "addons")}
+                                onChange={(e) =>
+                                  handleArrayChange(
+                                    index,
+                                    "price",
+                                    Number(e.target.value),
+                                    "addons",
+                                  )
+                                }
                                 className="w-full bg-transparent outline-none font-bold text-gray-700 placeholder:text-gray-300"
                                 placeholder="0"
                               />
@@ -728,18 +945,26 @@ export default function TrekForm() {
                           </div>
                           <textarea
                             value={addon.description}
-                            onChange={(e) => handleArrayChange(index, "description", e.target.value, "addons")}
+                            onChange={(e) =>
+                              handleArrayChange(
+                                index,
+                                "description",
+                                e.target.value,
+                                "addons",
+                              )
+                            }
                             className="w-full bg-gray-50 border border-gray-100 rounded-xl text-sm px-4 py-2 outline-none focus:ring-2 focus:ring-emerald-500/20 min-h-[80px]"
                             placeholder="Service description..."
                           />
                         </div>
-
                       </div>
                     ))}
                     {formData.addons.length === 0 && (
                       <div className="py-20 text-center space-y-2 opacity-30">
                         <FaHiking className="mx-auto text-4xl" />
-                        <p className="text-sm font-bold">No optional services added</p>
+                        <p className="text-sm font-bold">
+                          No optional services added
+                        </p>
                       </div>
                     )}
                   </div>
@@ -747,7 +972,6 @@ export default function TrekForm() {
               </div>
             </div>
           )}
-
         </form>
       </div>
     </div>
