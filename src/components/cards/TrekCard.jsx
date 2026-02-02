@@ -16,7 +16,7 @@ export default function TrekCard({ trek, onEdit, onView, onDelete }) {
             {/* Image Section */}
             <div className="relative h-48 overflow-hidden">
                 <img
-                    src={trek.image || fallbackImage}
+                    src={trek.image?.cdnUrl || fallbackImage}
                     alt={trek.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     onError={(e) => {

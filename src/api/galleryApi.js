@@ -50,10 +50,11 @@ export const updateGallery = async (id, formData) => {
   }
 };
 
+
 /**
- * Deletes a specific item within a gallery record.
- * @param {String} galleryId - The ID of the gallery record.
- * @param {String} itemId - The ID of the specific image item in the gallery.
+ * Deletes a specific gallery item.
+ * Adjusted for backend route that expects only :itemId
+ * @param {String} itemId - The ID of the image item in the gallery.
  * @returns {Promise<Object>} - The response from the server.
  */
 export const deleteGalleryItem = async (galleryId) => {
