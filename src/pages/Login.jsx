@@ -1,31 +1,79 @@
 import { useState } from "react";
+import { loginAdmin } from "../api/adminApi";
 
-export default function LoginPage() {
+export default function Login() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     role: "user",
   });
   const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Clear error when user starts typing
+    if (apiError) {
+      setApiError("");
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setApiError("");
+    setSuccessMessage("");
 
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Login data:", formData);
+    try {
+      // Create FormData object for API
+      const loginData = new FormData();
+      loginData.append("email", formData.email);
+      loginData.append("password", formData.password);
+      loginData.append("role", formData.role);
+
+      // Call the API
+      const response = await loginAdmin(loginData);
+
+      // Handle successful login
+      setSuccessMessage("Login successful! Redirecting...");
+
+      // Store token if provided
+      if (response.token) {
+        localStorage.setItem("authToken", response.token);
+      }
+
+      // Store user data if provided
+      if (response.user) {
+        localStorage.setItem("userData", JSON.stringify(response.user));
+      }
+
+      // Redirect based on role after 1.5 seconds
+      setTimeout(() => {
+        if (formData.role === "admin") {
+          window.location.href = "/dashboard";
+        } else {
+          window.location.href = "/user-dashboard";
+        }
+      }, 1500);
+    } catch (error) {
+      // Handle API errors
+      console.error("Login error:", error);
+
+      if (error.message) {
+        setApiError(error.message);
+      } else if (error.error) {
+        setApiError(error.error);
+      } else {
+        setApiError(
+          "Login failed. Please check your credentials and try again.",
+        );
+      }
+    } finally {
       setLoading(false);
-      alert(`Logged in as ${formData.role}: ${formData.email}`);
-
-      // For now, just log - you can add navigation later
-      // window.location.href = formData.role === "admin" ? "/dashboard" : "/user-dashboard";
-    }, 1500);
+    }
   };
 
   return (
@@ -179,6 +227,24 @@ export default function LoginPage() {
                 </p>
               </div>
 
+              {/* Success Message */}
+              {successMessage && (
+                <div className="mb-6 p-4 bg-emerald-50 border-2 border-emerald-500 rounded-2xl">
+                  <p className="text-emerald-700 text-sm font-semibold text-center">
+                    {successMessage}
+                  </p>
+                </div>
+              )}
+
+              {/* Error Message */}
+              {apiError && (
+                <div className="mb-6 p-4 bg-red-50 border-2 border-red-500 rounded-2xl">
+                  <p className="text-red-700 text-sm font-semibold text-center">
+                    {apiError}
+                  </p>
+                </div>
+              )}
+
               {/* Form */}
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Email Field */}
@@ -198,7 +264,7 @@ export default function LoginPage() {
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth={2}
-                          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                          d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
                         />
                       </svg>
                     </div>
@@ -209,7 +275,8 @@ export default function LoginPage() {
                       onChange={handleChange}
                       placeholder="you@example.com"
                       required
-                      className="w-full pl-12 pr-4 py-4 bg-white border-2 border-gray-200 rounded-2xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all text-gray-900 placeholder:text-gray-400"
+                      disabled={loading}
+                      className="w-full pl-12 pr-4 py-4 bg-white border-2 border-gray-200 rounded-2xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all text-gray-900 placeholder:text-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                   </div>
                 </div>
@@ -242,7 +309,8 @@ export default function LoginPage() {
                       onChange={handleChange}
                       placeholder="••••••••"
                       required
-                      className="w-full pl-12 pr-4 py-4 bg-white border-2 border-gray-200 rounded-2xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all text-gray-900 placeholder:text-gray-400"
+                      disabled={loading}
+                      className="w-full pl-12 pr-4 py-4 bg-white border-2 border-gray-200 rounded-2xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all text-gray-900 placeholder:text-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                   </div>
                 </div>
@@ -258,7 +326,8 @@ export default function LoginPage() {
                       onClick={() =>
                         setFormData((prev) => ({ ...prev, role: "user" }))
                       }
-                      className={`py-2.5 px-4 rounded-xl border-2 font-semibold transition-all duration-300 text-sm ${
+                      disabled={loading}
+                      className={`py-2.5 px-4 rounded-xl border-2 font-semibold transition-all duration-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed ${
                         formData.role === "user"
                           ? "bg-emerald-600 text-white border-emerald-600 shadow-lg shadow-emerald-600/30"
                           : "bg-white text-gray-700 border-gray-200 hover:border-emerald-300"
@@ -284,7 +353,8 @@ export default function LoginPage() {
                       onClick={() =>
                         setFormData((prev) => ({ ...prev, role: "admin" }))
                       }
-                      className={`py-2.5 px-4 rounded-xl border-2 font-semibold transition-all duration-300 text-sm ${
+                      disabled={loading}
+                      className={`py-2.5 px-4 rounded-xl border-2 font-semibold transition-all duration-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed ${
                         formData.role === "admin"
                           ? "bg-emerald-600 text-white border-emerald-600 shadow-lg shadow-emerald-600/30"
                           : "bg-white text-gray-700 border-gray-200 hover:border-emerald-300"
@@ -313,7 +383,8 @@ export default function LoginPage() {
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
-                      className="w-5 h-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 focus:ring-2"
+                      disabled={loading}
+                      className="w-5 h-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                     <span className="text-gray-700 font-medium">
                       Remember me
@@ -349,7 +420,7 @@ export default function LoginPage() {
                 <p className="text-gray-600">
                   Don't have an account?{" "}
                   <a
-                    href="#"
+                    href="/registration"
                     className="text-emerald-600 hover:text-emerald-700 font-bold"
                   >
                     Create one now
