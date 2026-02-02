@@ -14,14 +14,16 @@ import Gallery from "../pages/Gallery";
 import ManageReviews from "../pages/ManageReviews";
 import ManagePayments from "../pages/ManagePayments";
 import LoginPage from "../pages/Login";
+import RegistrationPage from "../pages/Registration";
 
 export default function AppRoutes() {
   return (
     <Routes>
       {/* Login */}
-      <Route path="/login" element={<LoginPage />} />
+      <Route path="/" element={<LoginPage />} />
+      <Route path="/registration" element={<RegistrationPage />} />
       <Route element={<AdminLayout />}>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         {/* Treks */}
         <Route path="/treks" element={<TrekForm />} />
         <Route path="/treks/manage" element={<ManageTreks />} />
