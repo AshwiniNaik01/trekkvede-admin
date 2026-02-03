@@ -9,12 +9,12 @@ import TrekGalleryForm from "../pages/TrekGalleryForm";
 import ManageTrekGallery from "../pages/ManageTrekGallery";
 import ManageCategories from "../pages/ManageCategories";
 import CategoryForm from "../pages/CategoryForm";
-import Gallery from "../pages/Gallery";
 
 import ManageReviews from "../pages/ManageReviews";
 import ManagePayments from "../pages/ManagePayments";
 import LoginPage from "../pages/Login";
 import RegistrationPage from "../pages/Registration";
+import CreateSlotForm from "../pages/CreateSlotForm";
 
 export default function AppRoutes() {
   return (
@@ -46,6 +46,9 @@ export default function AppRoutes() {
 
         {/* Payments */}
         <Route path="/payments/manage" element={<ManagePayments />} />
+
+        {/* Slots */}
+        <Route path={"/slots/create"} element={<CreateSlotForm />} />
       </Route>
     </Routes>
   );

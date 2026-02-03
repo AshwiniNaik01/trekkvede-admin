@@ -52,6 +52,15 @@ const menuItems = [
   },
   { name: "Reviews", path: "/reviews/manage", icon: <FaStar /> },
   { name: "Payments", path: "/payments/manage", icon: <FaWallet /> },
+  {
+    name: "Slots",
+    path: "/slots",
+    icon: <FaImages />,
+    submenu: [
+      { name: "Create Slot", path: "/slots/create" },
+      { name: "Manage Slots", path: "/slots/manage" },
+    ],
+  },
 ];
 
 export default function Sidebar() {
