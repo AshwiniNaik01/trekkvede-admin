@@ -15,6 +15,7 @@ import ManagePayments from "../pages/ManagePayments";
 import LoginPage from "../pages/Login";
 import RegistrationPage from "../pages/Registration";
 import CreateSlotForm from "../pages/CreateSlotForm";
+import ManageSlot from "../pages/manageSlot";
 
 export default function AppRoutes() {
   return (
@@ -49,6 +50,7 @@ export default function AppRoutes() {
 
         {/* Slots */}
         <Route path={"/slots/create"} element={<CreateSlotForm />} />
+        <Route path={"slots/manage"} element={<ManageSlot />} />
       </Route>
     </Routes>
   );
