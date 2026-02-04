@@ -299,8 +299,8 @@ const ManageSlot = () => {
             <FiUpload /> Add New Photo
           </button> */}
         </div>
-        <div className="bg-white border border-gray-200 rounded-2xl p-4 md:p-6 shadow-lg max-h-[600px] md:max-h-[800px] lg:max-h-screen overflow-hidden flex flex-col">
-          <div className="flex items-center gap-2 mb-4 md:mb-6 flex-shrink-0">
+        <div className="bg-white border border-gray-200 rounded-2xl p-4 md:p-6 shadow-lg max-h-120 md:max-h-200 lg:max-h-screen overflow-hidden flex flex-col">
+          <div className="flex items-center gap-2 mb-4 md:mb-6 shrink-0">
             <div className="p-1.5 bg-teal-50 rounded-lg">
               <FiTrendingUp className="w-3.5 h-3.5 md:w-4 md:h-4 text-teal-600" />
             </div>
@@ -344,7 +344,7 @@ const ManageSlot = () => {
                     <div className="flex items-start justify-between mb-3 md:mb-4 gap-2">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 md:gap-3 mb-2">
-                          <div className="p-1.5 md:p-2 bg-white rounded-lg border border-gray-200 shadow-sm flex-shrink-0">
+                          <div className="p-1.5 md:p-2 bg-white rounded-lg border border-gray-200 shadow-sm shrink-0">
                             <FiCalendar className="w-4 h-4 md:w-5 md:h-5 text-emerald-600" />
                           </div>
                           <h3 className="text-base md:text-lg font-bold text-gray-900 group-hover:text-emerald-600 transition-colors truncate">
@@ -353,7 +353,7 @@ const ManageSlot = () => {
                         </div>
 
                         <div className="flex flex-wrap items-center gap-1 md:gap-2 text-xs md:text-sm text-gray-600 ml-8 md:ml-14">
-                          <FiClock className="w-3 h-3 md:w-4 md:h-4 flex-shrink-0" />
+                          <FiClock className="w-3 h-3 md:w-4 md:h-4 shrink-0" />
                           <span className="truncate">
                             {new Date(slot.startDate).toLocaleDateString(
                               "en-US",
@@ -365,7 +365,7 @@ const ManageSlot = () => {
                               },
                             )}
                           </span>
-                          <span className="flex-shrink-0">→</span>
+                          <span className="shrink-0">→</span>
                           <span className="truncate">
                             {new Date(slot.endDate).toLocaleDateString(
                               "en-US",
@@ -381,7 +381,7 @@ const ManageSlot = () => {
                       </div>
 
                       <div
-                        className={`flex items-center gap-1.5 md:gap-2 px-2 md:px-3 py-1 md:py-1.5 rounded-lg ${statusConfig.bgColor} border ${statusConfig.borderColor} flex-shrink-0`}
+                        className={`flex items-center gap-1.5 md:gap-2 px-2 md:px-3 py-1 md:py-1.5 rounded-lg ${statusConfig.bgColor} border ${statusConfig.borderColor} shrink-0`}
                       >
                         <StatusIcon
                           className={`w-3 h-3 md:w-4 md:h-4 ${statusConfig.textColor}`}
@@ -409,10 +409,10 @@ const ManageSlot = () => {
                         <div
                           className={`h-full transition-all duration-500 rounded-full ${
                             percentage > 50
-                              ? "bg-gradient-to-r from-emerald-500 to-teal-500"
+                              ? "bg-linear-to-r from-emerald-500 to-teal-500"
                               : percentage > 20
-                                ? "bg-gradient-to-r from-amber-500 to-orange-500"
-                                : "bg-gradient-to-r from-orange-500 to-red-500"
+                                ? "bg-linear-to-r from-amber-500 to-orange-500"
+                                : "bg-linear-to-r from-orange-500 to-red-500"
                           }`}
                           style={{ width: `${percentage}%` }}
                         ></div>
@@ -448,7 +448,7 @@ const ManageSlot = () => {
         </div>
 
         {/* Quick Stats Footer */}
-        <div className="mt-4 md:mt-6 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 flex-shrink-0">
+        <div className="mt-4 md:mt-6 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 shrink-0">
           {[
             {
               label: "Total Slots",
@@ -487,7 +487,7 @@ const ManageSlot = () => {
             return (
               <div
                 key={index}
-                className={`bg-gradient-to-br ${stat.gradient} border ${stat.border} rounded-xl p-3 md:p-4 hover:scale-105 transition-transform duration-300 shadow-sm`}
+                className={`bg-linear-to-br ${stat.gradient} border ${stat.border} rounded-xl p-3 md:p-4 hover:scale-105 transition-transform duration-300 shadow-sm`}
               >
                 <div className="flex items-center justify-between">
                   <div className="min-w-0 flex-1">
@@ -501,7 +501,7 @@ const ManageSlot = () => {
                     </p>
                   </div>
                   <div
-                    className={`p-2 md:p-3 bg-white rounded-xl border ${stat.border} shadow-sm flex-shrink-0`}
+                    className={`p-2 md:p-3 bg-white rounded-xl border ${stat.border} shadow-sm shrink-0`}
                   >
                     <Icon
                       className={`w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-${stat.color}-600`}
@@ -709,7 +709,7 @@ const ManageSlot = () => {
                   </div>
                   <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-300"
+                      className="h-full bg-linear-to-r from-emerald-500 to-teal-500 transition-all duration-300"
                       style={{
                         width: `${
                           editFormData.totalSeats > 0
@@ -738,7 +738,7 @@ const ManageSlot = () => {
                 <button
                   type="submit"
                   disabled={updating}
-                  className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-emerald-500/25"
+                  className="flex-1 bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-emerald-500/25"
                 >
                   {updating ? (
                     <>
@@ -832,7 +832,7 @@ const ManageSlot = () => {
               <button
                 onClick={handleDeleteConfirm}
                 disabled={deleting}
-                className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-red-500/25"
+                className="flex-1 bg-linear-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-red-500/25"
               >
                 {deleting ? (
                   <>

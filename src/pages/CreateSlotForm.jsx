@@ -161,7 +161,7 @@ const CreateSlotForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-4 md:p-6 ">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-100 p-4 md:p-6 ">
       {/* Decorative Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 right-0 w-64 h-64 md:w-96 md:h-96 bg-emerald-500/5 rounded-full blur-3xl"></div>
@@ -199,7 +199,7 @@ const CreateSlotForm = () => {
         {/* Error Message */}
         {error && (
           <div className="mb-4 md:mb-6 bg-red-50 border border-red-200 rounded-xl p-3 md:p-4 flex items-start gap-2 md:gap-3 animate-shake">
-            <FiAlertCircle className="w-4 h-4 md:w-5 md:h-5 text-red-600 flex-shrink-0 mt-0.5" />
+            <FiAlertCircle className="w-4 h-4 md:w-5 md:h-5 text-red-600 shrink-0 mt-0.5" />
             <div className="flex-1 min-w-0">
               <h3 className="text-xs md:text-sm font-semibold text-red-800">
                 Error
@@ -208,7 +208,7 @@ const CreateSlotForm = () => {
             </div>
             <button
               onClick={() => setError(null)}
-              className="text-red-400 hover:text-red-600 transition-colors flex-shrink-0"
+              className="text-red-400 hover:text-red-600 transition-colors shrink-0"
             >
               <FiX className="w-4 h-4 md:w-5 md:h-5" />
             </button>
@@ -218,7 +218,7 @@ const CreateSlotForm = () => {
         {/* Success Message */}
         {successMessage && (
           <div className="mb-4 md:mb-6 bg-emerald-50 border border-emerald-200 rounded-xl p-3 md:p-4 flex items-start gap-2 md:gap-3 animate-slideDown">
-            <FiCheck className="w-4 h-4 md:w-5 md:h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+            <FiCheck className="w-4 h-4 md:w-5 md:h-5 text-emerald-600 shrink-0 mt-0.5" />
             <div className="flex-1 min-w-0">
               <h3 className="text-xs md:text-sm font-semibold text-emerald-800">
                 Success
@@ -229,7 +229,7 @@ const CreateSlotForm = () => {
             </div>
             <button
               onClick={() => setSuccessMessage("")}
-              className="text-emerald-400 hover:text-emerald-600 transition-colors flex-shrink-0"
+              className="text-emerald-400 hover:text-emerald-600 transition-colors shrink-0"
             >
               <FiX className="w-4 h-4 md:w-5 md:h-5" />
             </button>
@@ -260,7 +260,7 @@ const CreateSlotForm = () => {
             <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5">
               {/* Start Date */}
               <div className="group">
-                <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                <label className="text-xs md:text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                   <FiCalendar className="w-3.5 h-3.5 md:w-4 md:h-4 text-emerald-600" />
                   Start Date
                 </label>
@@ -276,7 +276,7 @@ const CreateSlotForm = () => {
 
               {/* End Date */}
               <div className="group">
-                <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                <label className=" text-xs md:text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                   <FiCalendar className="w-3.5 h-3.5 md:w-4 md:h-4 text-emerald-600" />
                   End Date
                 </label>
@@ -292,7 +292,7 @@ const CreateSlotForm = () => {
 
               {/* Display Range */}
               <div className="group">
-                <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                <label className=" text-xs md:text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                   <FiMapPin className="w-3.5 h-3.5 md:w-4 md:h-4 text-emerald-600" />
                   Display Range
                 </label>
@@ -308,7 +308,7 @@ const CreateSlotForm = () => {
 
               {/* Total Seats */}
               <div className="group">
-                <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                <label className=" text-xs md:text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                   <FiUsers className="w-3.5 h-3.5 md:w-4 md:h-4 text-emerald-600" />
                   Total Seats
                 </label>
@@ -325,7 +325,7 @@ const CreateSlotForm = () => {
 
               {/* Booked Seats */}
               <div className="group">
-                <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                <label className=" text-xs md:text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                   <FiCheck className="w-3.5 h-3.5 md:w-4 md:h-4 text-emerald-600" />
                   Booked Seats
                 </label>
@@ -343,7 +343,7 @@ const CreateSlotForm = () => {
 
               {/* Status */}
               <div className="group">
-                <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                <label className=" text-xs md:text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                   <FiAlertCircle className="w-3.5 h-3.5 md:w-4 md:h-4 text-emerald-600" />
                   Slot Status
                 </label>
@@ -365,7 +365,7 @@ const CreateSlotForm = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white font-semibold py-2.5 md:py-3.5 px-4 md:px-6 rounded-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 group text-sm md:text-base"
+                  className="w-full bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white font-semibold py-2.5 md:py-3.5 px-4 md:px-6 rounded-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 group text-sm md:text-base"
                 >
                   {loading ? (
                     <>
