@@ -161,7 +161,7 @@ const CreateSlotForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-4 md:p-6 font-['Outfit']">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-4 md:p-6 ">
       {/* Decorative Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 right-0 w-64 h-64 md:w-96 md:h-96 bg-emerald-500/5 rounded-full blur-3xl"></div>
@@ -172,11 +172,11 @@ const CreateSlotForm = () => {
         {/* Header */}
         <div className="mb-6 md:mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 md:gap-3 mb-2">
+            <div className="flex items-center text-3xl font-bold gap-2 md:gap-3 mb-2">
               <div className="p-1.5 md:p-2 bg-emerald-50 rounded-lg border border-emerald-200">
                 <FiCalendar className="w-5 h-5 md:w-6 md:h-6 text-emerald-600" />
               </div>
-              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 tracking-tight">
+              <h1 className="text-3xl md:text-4xl lg:text-4xl font-bold text-gray-900 tracking-tight">
                 Slot Management
               </h1>
               <HiSparkles className="w-5 h-5 md:w-6 md:h-6 text-amber-500 animate-pulse" />

@@ -281,6 +281,24 @@ const ManageSlot = () => {
   return (
     <div>
       <div className="min-h-screen bg-gray-100 p-4 md:p-8">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 flex items-center gap-3">
+              <FiCalendar className="text-emerald-500 bg-emerald-100 p-2 rounded-2xl" />
+              Manage Slots
+            </h1>
+            <p className="text-gray-500 mt-1">
+              View, edit, and manage your trek slots
+            </p>
+          </div>
+          {/* <button
+            onClick={() => navigate("/gallery/create")}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-3 rounded-xl shadow-md flex items-center gap-2 mt-4 md:mt-0"
+          >
+            <FiUpload /> Add New Photo
+          </button> */}
+        </div>
         <div className="bg-white border border-gray-200 rounded-2xl p-4 md:p-6 shadow-lg max-h-[600px] md:max-h-[800px] lg:max-h-screen overflow-hidden flex flex-col">
           <div className="flex items-center gap-2 mb-4 md:mb-6 flex-shrink-0">
             <div className="p-1.5 bg-teal-50 rounded-lg">
