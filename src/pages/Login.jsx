@@ -77,7 +77,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-emerald-950 via-teal-900 to-green-950">
+    <div className="min-h-screen relative overflow-hidden bg-linear-to-br from-emerald-950 via-teal-900 to-green-950">
       {/* Animated Background Layers */}
       <div className="absolute inset-0 opacity-20">
         <div
@@ -124,7 +124,7 @@ export default function Login() {
         <div className="w-full max-w-6xl grid md:grid-cols-2 gap-0 bg-white/5 backdrop-blur-2xl rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
           {/* Left Panel - Hero Image */}
           <div className="relative hidden md:block overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/90 to-teal-700/90 mix-blend-multiply z-10"></div>
+            <div className="absolute inset-0 bg-linear-to-br from-emerald-600/90 to-teal-700/90 mix-blend-multiply z-10"></div>
             <img
               src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070"
               alt="Mountain Trek"
@@ -137,7 +137,7 @@ export default function Login() {
                 <div className="inline-flex items-center gap-3 mb-6 bg-white/10 backdrop-blur-sm px-5 py-2 rounded-full border border-white/20 relative overflow-hidden">
                   {/* Sparkle effect overlay */}
                   <div className="absolute inset-0 animate-sparkle-sweep">
-                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 -translate-x-full"></div>
+                    <div className="absolute top-0 left-0 w-full h-full bg-linear-to-r from-transparent via-white/30 to-transparent skew-x-12 -translate-x-full"></div>
                   </div>
 
                   <svg
@@ -187,14 +187,14 @@ export default function Login() {
           </div>
 
           {/* Right Panel - Login Form */}
-          <div className="p-8 md:p-12 flex flex-col justify-center bg-gradient-to-br from-white/95 to-emerald-50/95 backdrop-blur-xl">
+          <div className="p-8 md:p-12 flex flex-col justify-center bg-linear-to-br from-white/95 to-emerald-50/95 backdrop-blur-xl">
             {/* Logo for Mobile */}
             <div className="md:hidden mb-8 text-center">
               <div className="inline-flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 bg-emerald-600 rounded-2xl flex items-center justify-center text-white relative overflow-hidden">
                   {/* Sparkle effect */}
                   <div className="absolute inset-0 animate-sparkle-sweep">
-                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 -translate-x-full"></div>
+                    <div className="absolute top-0 left-0 w-full h-full bg-linear-to-r from-transparent via-white/30 to-transparent skew-x-12 -translate-x-full"></div>
                   </div>
                   <svg
                     className="w-6 h-6 animate-sparkle-rotate relative z-10"
@@ -402,7 +402,7 @@ export default function Login() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black rounded-2xl hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 shadow-lg shadow-emerald-600/30 hover:shadow-xl hover:shadow-emerald-600/40 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+                  className="w-full py-4 bg-linear-to-r from-emerald-600 to-teal-600 text-white font-black rounded-2xl hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 shadow-lg shadow-emerald-600/30 hover:shadow-xl hover:shadow-emerald-600/40 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
                 >
                   {loading ? (
                     <div className="flex items-center justify-center gap-2">

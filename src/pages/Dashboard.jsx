@@ -223,7 +223,7 @@ export default function Dashboard() {
             >
               <div className="flex items-start justify-between relative z-10">
                 <div
-                  className={`p-4 rounded-lg bg-gradient-to-br ${card.color} text-white shadow-xl shadow-blue-100/50`}
+                  className={`p-4 rounded-lg bg-linear-to-br ${card.color} text-white shadow-xl shadow-blue-100/50`}
                 >
                   {card.icon}
                 </div>
@@ -290,7 +290,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="h-[350px] w-full">
+            <div className="h-87.5 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={bookingTrend}>
                   <defs>
@@ -343,7 +343,7 @@ export default function Dashboard() {
             <h4 className="text-xs font-black uppercase tracking-[0.4em] text-cyan-400 mb-8">
               Expedition Mix
             </h4>
-            <div className="h-[250px] w-full relative">
+            <div className="h-62.5 w-full relative">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie

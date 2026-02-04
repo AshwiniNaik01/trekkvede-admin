@@ -23,7 +23,7 @@ export default function Header({ onToggleSidebar }) {
           <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border-2 border-white"></span>
         </button>
 
-        <div className="h-8 w-[1px] bg-slate-100"></div>
+        <div className="h-8 w-px bg-slate-100"></div>
 
         {/* User Profile */}
         <div className="flex items-center gap-3 group cursor-pointer">
@@ -35,8 +35,12 @@ export default function Header({ onToggleSidebar }) {
             />
           </div>
           <div className="hidden sm:block">
-            <p className="text-slate-900 font-black text-xs leading-none">Ashwini Naik</p>
-            <p className="text-[9px] text-emerald-600 font-black uppercase tracking-widest mt-1">Super Admin</p>
+            <p className="text-slate-900 font-black text-xs leading-none">
+              Ashwini Naik
+            </p>
+            <p className="text-[9px] text-emerald-600 font-black uppercase tracking-widest mt-1">
+              Super Admin
+            </p>
           </div>
         </div>
 

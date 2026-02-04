@@ -69,7 +69,7 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`min-h-screen bg-gradient-to-b from-emerald-900 to-emerald-800 text-white shadow-xl transition-all duration-300
+      className={`min-h-screen bg-linear-to-b from-emerald-900 to-emerald-800 text-white shadow-xl transition-all duration-300
         ${collapsed ? "w-20" : "w-64"}`}
     >
       {/* HEADER / LOGO + HAMBURGER */}
