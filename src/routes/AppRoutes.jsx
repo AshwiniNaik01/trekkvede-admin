@@ -16,7 +16,7 @@ import ManagePayments from "../pages/ManagePayments";
 import LoginPage from "../pages/Login";
 import RegistrationPage from "../pages/Registration";
 import CreateSlotForm from "../pages/CreateSlotForm";
-import ManageSlot from "../pages/ManageSlot";
+import ManageSlot from "../pages/manageSlot";
 import ManageContacts from "../pages/ManageContacts";
 
 export default function AppRoutes() {
