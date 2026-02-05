@@ -61,6 +61,7 @@ const menuItems = [
       { name: "Manage Slots", path: "/slots/manage" },
     ],
   },
+  { name: "Contacts", path: "/contacts", icon: <FaUsers /> },
 ];
 
 export default function Sidebar() {
