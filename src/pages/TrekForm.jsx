@@ -49,6 +49,7 @@ export default function TrekForm() {
     bestFor: "",
     description: "",
     status: "Upcoming",
+    bookingType: "Trek",
     startDate: null,
     endDate: null,
     feeDetails: {
@@ -176,6 +177,12 @@ export default function TrekForm() {
     { value: "Upcoming", label: "Upcoming" },
     { value: "Ongoing", label: "Ongoing" },
     { value: "Completed", label: "Completed" },
+  ];
+
+  const bookingTypes = [
+    { value: "Trek", label: "Trek" },
+    { value: "Trip", label: "Trip" },
+    { value: "Trek + Camping", label: "Trek + Camping" },
   ];
 
   const trekInfoTitles = [
@@ -384,6 +391,21 @@ export default function TrekForm() {
                       setFormData({ ...formData, category: val.value })
                     }
                     placeholder="Select a category"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 ml-1 mb-2">
+                    Booking Type
+                  </label>
+                  <CustomSelect
+                    options={bookingTypes}
+                    value={bookingTypes.find(
+                      (s) => s.value === formData.bookingType,
+                    )}
+                    onChange={(val) =>
+                      setFormData({ ...formData, bookingType: val.value })
+                    }
                   />
                 </div>
 
