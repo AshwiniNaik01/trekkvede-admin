@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Cookies from "js-cookie";
 import { loginAdmin } from "../api/adminApi";
 
 export default function Login() {
@@ -40,23 +41,18 @@ export default function Login() {
       // Handle successful login
       setSuccessMessage("Login successful! Redirecting...");
 
-      // Store token if provided
-      if (response.token) {
-        localStorage.setItem("authToken", response.token);
+      // Store admin ID in cookies if login is successful
+      if (response.success && response.data && response.data.admin) {
+        const adminId = response.data.admin._id;
+        // Store admin ID in cookie (expires in 7 days)
+        Cookies.set("adminId", adminId, { expires: 7 });
+        // Also store admin data in localStorage for reference
+        localStorage.setItem("adminData", JSON.stringify(response.data.admin));
       }
 
-      // Store user data if provided
-      if (response.user) {
-        localStorage.setItem("userData", JSON.stringify(response.user));
-      }
-
-      // Redirect based on role after 1.5 seconds
+      // Redirect to dashboard after 1.5 seconds
       setTimeout(() => {
-        if (formData.role === "admin") {
-          window.location.href = "/dashboard";
-        } else {
-          window.location.href = "/user-dashboard";
-        }
+        window.location.href = "/dashboard";
       }, 1500);
     } catch (error) {
       // Handle API errors
@@ -77,7 +73,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-linear-to-br from-emerald-950 via-teal-900 to-green-950">
+    <div className="max-h-screen relative overflow-hidden bg-gradient-to-br from-emerald-950 via-teal-900 to-green-950">
       {/* Animated Background Layers */}
       <div className="absolute inset-0 opacity-20">
         <div
@@ -326,8 +322,7 @@ export default function Login() {
                       onClick={() =>
                         setFormData((prev) => ({ ...prev, role: "user" }))
                       }
-                      disabled={loading}
-                      className={`py-2.5 px-4 rounded-xl border-2 font-semibold transition-all duration-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed ${
+                      className={`py-4 px-6 rounded-2xl border-2 font-bold transition-all duration-300 ${
                         formData.role === "user"
                           ? "bg-emerald-600 text-white border-emerald-600 shadow-lg shadow-emerald-600/30"
                           : "bg-white text-gray-700 border-gray-200 hover:border-emerald-300"
@@ -353,8 +348,7 @@ export default function Login() {
                       onClick={() =>
                         setFormData((prev) => ({ ...prev, role: "admin" }))
                       }
-                      disabled={loading}
-                      className={`py-2.5 px-4 rounded-xl border-2 font-semibold transition-all duration-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed ${
+                      className={`py-4 px-6 rounded-2xl border-2 font-bold transition-all duration-300 ${
                         formData.role === "admin"
                           ? "bg-emerald-600 text-white border-emerald-600 shadow-lg shadow-emerald-600/30"
                           : "bg-white text-gray-700 border-gray-200 hover:border-emerald-300"

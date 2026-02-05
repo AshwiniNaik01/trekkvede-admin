@@ -1,6 +1,19 @@
 import { FaBars, FaBell } from "react-icons/fa";
+import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 
 export default function Header({ onToggleSidebar }) {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // Clear admin ID from cookies
+    Cookies.remove("adminId");
+    // Clear admin data from localStorage
+    localStorage.removeItem("adminData");
+    // Redirect to login page
+    navigate("/");
+  };
+
   return (
     <header className="bg-white/80 backdrop-blur-md border-b border-slate-100 px-8 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
       {/* LEFT: Branding */}
@@ -45,7 +58,10 @@ export default function Header({ onToggleSidebar }) {
         </div>
 
         {/* Logout */}
-        <button className="text-[10px] font-black uppercase tracking-widest bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-xl transition-all shadow-lg active:scale-95">
+        <button
+          onClick={handleLogout}
+          className="text-[10px] font-black uppercase tracking-widest bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-xl transition-all shadow-lg active:scale-95"
+        >
           Sign Out
         </button>
       </div>
