@@ -424,14 +424,22 @@ const ManageContacts = () => {
 
                                   {/* Action Buttons */}
                                   <div className="flex gap-3 pt-4 border-t border-gray-200">
-                                    <button className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-semibold hover:from-emerald-700 hover:to-teal-700 transition-all shadow-md hover:shadow-lg">
+                                    <a
+                                      href={`mailto:${contact.email}?subject=Regarding your inquiry&body=Hello ${contact.name},`}
+                                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-semibold hover:from-emerald-700 hover:to-teal-700 transition-all shadow-md hover:shadow-lg"
+                                    >
                                       <HiMail className="w-5 h-5" />
                                       Reply via Email
-                                    </button>
-                                    <button className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-semibold hover:from-green-700 hover:to-emerald-700 transition-all shadow-md hover:shadow-lg">
+                                    </a>
+
+                                    <a
+                                      href={`tel:${contact.mobile_no}`}
+                                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-semibold hover:from-green-700 hover:to-emerald-700 transition-all shadow-md hover:shadow-lg"
+                                    >
                                       <HiPhone className="w-5 h-5" />
                                       Call Now
-                                    </button>
+                                    </a>
+
                                     <button className="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all">
                                       Mark as Read
                                     </button>
