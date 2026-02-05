@@ -73,7 +73,7 @@ export default function Login() {
   };
 
   return (
-    <div className="max-h-screen relative overflow-hidden bg-gradient-to-br from-emerald-950 via-teal-900 to-green-950">
+    <div className="max-h-screen relative overflow-hidden bg-gradient-to-br from-emerald-950 via-teal-900 to-green-950 overflow-y-scroll">
       {/* Animated Background Layers */}
       <div className="absolute inset-0 opacity-20">
         <div
