@@ -12,7 +12,15 @@ import {
   FaEye,
   FaEdit,
   FaTrashAlt,
+  FaSpinner,
 } from "react-icons/fa";
+
+// API Imports
+import {
+  getAllBookings,
+  updateBooking,
+  deleteBooking,
+} from "../api/bookingApi";
 
 import DataTable from "../components/table/DataTable";
 import Modal from "../components/modal/Modal";
@@ -25,33 +33,36 @@ export default function ManageBookings() {
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
-  /* ---------------- MOCK DATA (Replace with API) ---------------- */
+  const [isLoading, setIsLoading] = useState(true);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [apiError, setApiError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+
+  /* ---------------- Fetch All Bookings ---------------- */
   useEffect(() => {
-    setData([
-      {
-        _id: "BK-1021",
-        name: "karan sharma",
-        phone: "+91 9876543210",
-        email: "karan@gmail.com",
-        trek: "Harishchandragad Trek",
-        date: "2026-02-15",
-        people: 4,
-        status: "Confirmed",
-        createdAt: "10:45 AM",
-      },
-      {
-        _id: "BK-1022",
-        name: "Amit Patil",
-        phone: "+91 9123456780",
-        email: "amit@gmail.com",
-        trek: "Rajgad Night Trek",
-        date: "2026-03-01",
-        people: 2,
-        status: "Pending",
-        createdAt: "02:15 PM",
-      },
-    ]);
+    fetchBookings();
   }, []);
+
+  const fetchBookings = async () => {
+    setIsLoading(true);
+    setApiError("");
+
+    try {
+      const response = await getAllBookings();
+
+      // Handle different response structures
+      const bookings = response.bookings || response.data || response || [];
+      setData(bookings);
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+      setApiError(
+        error.message || "Failed to load bookings. Please try again.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   /* ---------------- Handlers ---------------- */
   const handleView = (row) => {
@@ -60,25 +71,84 @@ export default function ManageBookings() {
   };
 
   const handleEdit = (row) => {
-    setEditBooking(row);
+    setEditBooking({ ...row });
     setIsEditOpen(true);
   };
 
-  const handleDelete = (row) => {
-    if (window.confirm(`Delete booking ${row._id}?`)) {
+  const handleDelete = async (row) => {
+    if (
+      !window.confirm(`Are you sure you want to delete booking ${row._id}?`)
+    ) {
+      return;
+    }
+
+    setIsDeleting(true);
+    setApiError("");
+    setSuccessMessage("");
+
+    try {
+      await deleteBooking(row._id);
+
+      // Remove from local state
       setData((prev) => prev.filter((b) => b._id !== row._id));
+
+      setSuccessMessage(`Booking ${row._id} deleted successfully!`);
+
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccessMessage(""), 3000);
+    } catch (error) {
+      console.error("Error deleting booking:", error);
+      setApiError(
+        error.message || "Failed to delete booking. Please try again.",
+      );
+    } finally {
+      setIsDeleting(false);
     }
   };
 
-  const handleUpdateBooking = (e) => {
+  const handleUpdateBooking = async (e) => {
     e.preventDefault();
 
-    setData((prev) =>
-      prev.map((b) => (b._id === editBooking._id ? editBooking : b)),
-    );
+    setIsUpdating(true);
+    setApiError("");
+    setSuccessMessage("");
 
-    setIsEditOpen(false);
-    alert("Booking updated successfully");
+    try {
+      // Prepare update data
+      const updateData = {
+        fullName: editBooking.name || editBooking.fullName,
+        whatsappNumber: editBooking.phone || editBooking.whatsappNumber,
+        email: editBooking.email,
+        departureDate: editBooking.date || editBooking.departureDate,
+        numberOfPeople: parseInt(
+          editBooking.people || editBooking.numberOfPeople,
+        ),
+        status: editBooking.status,
+      };
+
+      // Call update API
+      const response = await updateBooking(editBooking._id, updateData);
+
+      // Update local state
+      setData((prev) =>
+        prev.map((b) =>
+          b._id === editBooking._id ? { ...b, ...editBooking } : b,
+        ),
+      );
+
+      setSuccessMessage("Booking updated successfully!");
+      setIsEditOpen(false);
+
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccessMessage(""), 3000);
+    } catch (error) {
+      console.error("Error updating booking:", error);
+      setApiError(
+        error.message || "Failed to update booking. Please try again.",
+      );
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   /* ---------------- Table Columns ---------------- */
@@ -93,7 +163,7 @@ export default function ManageBookings() {
           <div>
             <p className="font-black text-gray-900">{row._id}</p>
             <p className="text-[10px] uppercase font-bold text-gray-400">
-              {row.trek}
+              {row.trek || "Trek Adventure"}
             </p>
           </div>
         </div>
@@ -104,10 +174,10 @@ export default function ManageBookings() {
       render: (row) => (
         <div className="space-y-1">
           <div className="flex items-center gap-2 font-bold text-gray-700">
-            <FaUser size={12} /> {row.name}
+            <FaUser size={12} /> {row.name || row.fullName}
           </div>
           <div className="flex items-center gap-2 text-xs text-gray-500">
-            <FaPhoneAlt size={10} /> {row.phone}
+            <FaPhoneAlt size={10} /> {row.phone || row.whatsappNumber}
           </div>
         </div>
       ),
@@ -117,10 +187,11 @@ export default function ManageBookings() {
       render: (row) => (
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-xs font-bold text-emerald-600">
-            <FaCalendarCheck /> {row.date}
+            <FaCalendarCheck /> {row.date || row.departureDate}
           </div>
           <div className="text-[10px] text-gray-400 font-bold uppercase">
-            <FaUsers className="inline mr-1" /> {row.people} People
+            <FaUsers className="inline mr-1" />{" "}
+            {row.people || row.numberOfPeople} People
           </div>
         </div>
       ),
@@ -128,14 +199,16 @@ export default function ManageBookings() {
     {
       label: "Status",
       render: (row) => {
-        if (row.status === "Confirmed") {
+        const status = row.status || "Pending";
+
+        if (status === "Confirmed") {
           return (
             <span className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-xl border border-emerald-100 text-[10px] font-black uppercase">
               <FaCheckCircle /> Confirmed
             </span>
           );
         }
-        if (row.status === "Pending") {
+        if (status === "Pending") {
           return (
             <span className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 text-amber-600 rounded-xl border border-amber-100 text-[10px] font-black uppercase">
               <FaClock /> Pending
@@ -181,12 +254,48 @@ export default function ManageBookings() {
           </div>
         </header>
 
-        {/* Table */}
-        <DataTable columns={columns} data={data} rowActions={rowActions} />
+        {/* Success Message */}
+        {successMessage && (
+          <div className="p-4 bg-green-50 border-2 border-green-500 rounded-2xl">
+            <div className="flex items-center gap-3">
+              <FaCheckCircle className="text-green-600 text-xl" />
+              <p className="text-green-700 font-semibold">{successMessage}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Error Message */}
+        {apiError && (
+          <div className="p-4 bg-red-50 border-2 border-red-500 rounded-2xl">
+            <div className="flex items-center gap-3">
+              <FaTimesCircle className="text-red-600 text-xl" />
+              <p className="text-red-700 font-semibold">{apiError}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Loading State */}
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <FaSpinner className="text-5xl text-emerald-600 animate-spin mb-4" />
+            <p className="text-gray-600 font-semibold">Loading bookings...</p>
+          </div>
+        ) : data.length === 0 ? (
+          <div className="bg-white rounded-2xl p-12 text-center">
+            <FaTicketAlt className="text-6xl text-gray-300 mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-gray-900 mb-2">
+              No Bookings Found
+            </h3>
+            <p className="text-gray-500">
+              There are no bookings to display at the moment.
+            </p>
+          </div>
+        ) : (
+          <DataTable columns={columns} data={data} rowActions={rowActions} />
+        )}
       </div>
 
       {/* ---------------- View Modal ---------------- */}
-
       <Modal
         isOpen={isViewOpen}
         onClose={() => setIsViewOpen(false)}
@@ -199,43 +308,118 @@ export default function ManageBookings() {
             <div className="bg-white rounded-2xl border border-[#E4EFEA] p-8 space-y-8">
               {/* GRID */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <InfoRow label="Customer Name" value={selectedBooking.name} />
+                <InfoRow
+                  label="Customer Name"
+                  value={selectedBooking.name || selectedBooking.fullName}
+                />
                 <InfoRow label="Email" value={selectedBooking.email} />
-                <InfoRow label="Phone" value={selectedBooking.phone} />
+                <InfoRow
+                  label="Phone"
+                  value={
+                    selectedBooking.phone || selectedBooking.whatsappNumber
+                  }
+                />
                 <InfoRow label="Booking ID" value={selectedBooking._id} />
-                <InfoRow label="Trek" value={selectedBooking.trek} />
-                <InfoRow label="Departure Date" value={selectedBooking.date} />
+                <InfoRow
+                  label="Trek"
+                  value={selectedBooking.trek || "Trek Adventure"}
+                />
+                <InfoRow
+                  label="Departure Date"
+                  value={selectedBooking.date || selectedBooking.departureDate}
+                />
                 <InfoRow
                   label="People"
-                  value={`${selectedBooking.people} PAX`}
+                  value={`${selectedBooking.people || selectedBooking.numberOfPeople} PAX`}
+                />
+                <InfoRow
+                  label="Blood Group"
+                  value={selectedBooking.bloodGroup || "N/A"}
+                />
+                <InfoRow
+                  label="Pickup Point"
+                  value={selectedBooking.pickupPoint || "N/A"}
+                />
+                <InfoRow
+                  label="Emergency Number"
+                  value={selectedBooking.emergencyNumber || "N/A"}
                 />
 
                 <div
                   className="flex items-center justify-between bg-[#F7FAF9]
-            border border-[#E4EFEA] rounded-xl px-5 py-4"
+              border border-[#E4EFEA] rounded-xl px-5 py-4"
                 >
                   <div>
                     <p className="text-xs uppercase tracking-widest text-[#6B8B82]">
                       Status
                     </p>
                     <p className="text-lg font-semibold text-[#1F2D2A]">
-                      {selectedBooking.status}
+                      {selectedBooking.status || "Pending"}
                     </p>
                   </div>
                   <span className="h-3 w-3 rounded-full bg-[#8FB8A8]" />
                 </div>
+
+                {selectedBooking.needCoupleTent && (
+                  <InfoRow label="Couple Tent" value="Yes" />
+                )}
+                {selectedBooking.needPrivateRoom && (
+                  <InfoRow label="Private Room" value="Yes" />
+                )}
               </div>
+
+              {/* Medical History */}
+              {selectedBooking.medicalHistory && (
+                <div className="bg-[#F7FAF9] border border-[#E4EFEA] rounded-xl px-5 py-4">
+                  <p className="text-xs uppercase tracking-widest text-[#6B8B82] mb-2">
+                    Medical History
+                  </p>
+                  <p className="text-sm text-[#1F2D2A]">
+                    {selectedBooking.medicalHistory}
+                  </p>
+                </div>
+              )}
+
+              {/* Additional Members */}
+              {selectedBooking.additionalMembers &&
+                selectedBooking.additionalMembers.length > 0 && (
+                  <div className="bg-[#F7FAF9] border border-[#E4EFEA] rounded-xl px-5 py-4">
+                    <p className="text-xs uppercase tracking-widest text-[#6B8B82] mb-3">
+                      Additional Members
+                    </p>
+                    <div className="space-y-2">
+                      {selectedBooking.additionalMembers.map((member, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center gap-3 text-sm"
+                        >
+                          <FaUser className="text-gray-400" />
+                          <span className="font-semibold text-[#1F2D2A]">
+                            {member.name}
+                          </span>
+                          <span className="text-gray-500">•</span>
+                          <span className="text-gray-600">
+                            {member.whatsapp}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
               {/* ACTION */}
               <div className="flex justify-end pt-6 border-t border-[#E4EFEA]">
                 <button
-                  onClick={() => handleEdit(selectedBooking)}
+                  onClick={() => {
+                    setIsViewOpen(false);
+                    handleEdit(selectedBooking);
+                  }}
                   className="
-              px-8 py-3 rounded-xl font-medium
-              bg-[#1F2D2A] text-white
-              hover:bg-[#172421]
-              transition
-            "
+                px-8 py-3 rounded-xl font-medium
+                bg-[#1F2D2A] text-white
+                hover:bg-[#172421]
+                transition
+              "
                 >
                   Edit Booking
                 </button>
@@ -260,14 +444,14 @@ export default function ManageBookings() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <EditField
                 label="Customer Name"
-                value={editBooking.name}
+                value={editBooking.name || editBooking.fullName}
                 onChange={(e) =>
                   setEditBooking({ ...editBooking, name: e.target.value })
                 }
               />
               <EditField
                 label="Phone"
-                value={editBooking.phone}
+                value={editBooking.phone || editBooking.whatsappNumber}
                 onChange={(e) =>
                   setEditBooking({ ...editBooking, phone: e.target.value })
                 }
@@ -282,7 +466,7 @@ export default function ManageBookings() {
               <EditField
                 label="Departure Date"
                 type="date"
-                value={editBooking.date}
+                value={editBooking.date || editBooking.departureDate}
                 onChange={(e) =>
                   setEditBooking({ ...editBooking, date: e.target.value })
                 }
@@ -290,7 +474,7 @@ export default function ManageBookings() {
               <EditField
                 label="No. of People"
                 type="number"
-                value={editBooking.people}
+                value={editBooking.people || editBooking.numberOfPeople}
                 onChange={(e) =>
                   setEditBooking({
                     ...editBooking,
@@ -304,14 +488,15 @@ export default function ManageBookings() {
                   Booking Status
                 </label>
                 <select
-                  value={editBooking.status}
+                  value={editBooking.status || "Pending"}
                   onChange={(e) =>
                     setEditBooking({
                       ...editBooking,
                       status: e.target.value,
                     })
                   }
-                  className="mt-2 w-full px-4 py-3 rounded-xl border border-gray-200 font-bold focus:ring-2 focus:ring-emerald-500"
+                  disabled={isUpdating}
+                  className="mt-2 w-full px-4 py-3 rounded-xl border border-gray-200 font-bold focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <option>Confirmed</option>
                   <option>Pending</option>
@@ -324,15 +509,26 @@ export default function ManageBookings() {
               <button
                 type="button"
                 onClick={() => setIsEditOpen(false)}
-                className="px-6 py-3 font-bold text-gray-400 hover:text-gray-600"
+                disabled={isUpdating}
+                className="px-6 py-3 font-bold text-gray-400 hover:text-gray-600 disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-2xl font-black shadow-lg shadow-emerald-500/20 flex items-center gap-2"
+                disabled={isUpdating}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-2xl font-black shadow-lg shadow-emerald-500/20 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <FaCheckCircle /> Save Changes
+                {isUpdating ? (
+                  <>
+                    <FaSpinner className="animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <FaCheckCircle /> Save Changes
+                  </>
+                )}
               </button>
             </div>
           </form>
@@ -343,15 +539,6 @@ export default function ManageBookings() {
 }
 
 /* ---------------- Small Components ---------------- */
-
-const Info = ({ label, value }) => (
-  <div className="p-4 rounded-2xl bg-gray-50 border border-gray-100">
-    <p className="text-[10px] uppercase font-black text-gray-400 mb-1">
-      {label}
-    </p>
-    <p className="font-bold text-gray-800">{value}</p>
-  </div>
-);
 
 const EditField = ({ label, type = "text", ...props }) => (
   <div>
