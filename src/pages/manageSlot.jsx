@@ -14,7 +14,7 @@ import {
 } from "react-icons/fi";
 import { MdEventAvailable, MdSpeed, MdEventBusy } from "react-icons/md";
 import { getAllSlots, deleteSlot, updateSlot } from "../api/slotsApi"; // Update path as needed
-import { toast } from "react-hot-toast"; // Optional: for notifications
+import { toast } from "react-hot-toast";
 
 const ManageSlot = () => {
   const [slots, setSlots] = useState([]);
