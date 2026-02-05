@@ -90,9 +90,13 @@ export default function ManageReviews() {
 
   const filteredReviews = Array.isArray(reviews)
     ? reviews.filter((review) => {
-        // Handle nested trekId object if populated, or ID string
-        const trekIdVal =
-          typeof review.trekId === "object" ? review.trekId._id : review.trekId;
+        // ✅ FIXED: Handle nested trekId object if populated, or ID string, or null/undefined
+        const trekIdVal = review.trekId
+          ? typeof review.trekId === "object"
+            ? review.trekId?._id // Added optional chaining for safety
+            : review.trekId
+          : null;
+
         const matchesTrek =
           selectedTrek === "all" || trekIdVal === selectedTrek;
 
