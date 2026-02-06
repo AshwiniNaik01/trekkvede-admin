@@ -50,7 +50,6 @@ export const updateGallery = async (id, formData) => {
   }
 };
 
-
 /**
  * Deletes a specific gallery item.
  * Adjusted for backend route that expects only :itemId
